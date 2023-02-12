@@ -1,14 +1,22 @@
-import './globals.css'
+import "./globals.css";
+import ThemeProvider from "@/app/theme-provider";
+import { Comfortaa } from "@next/font/google";
+import Header from "@/components/Header";
+
+const comfortaa = Comfortaa({ subsets: ["latin"] });
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      {/*
-        <head /> will contain the components returned by the nearest parent
-        head.js. Find out more at https://beta.nextjs.org/docs/api-reference/file-conventions/head
-      */}
       <head />
-      <body>{children}</body>
+      <body
+        className={`text-white bg-gradient-to-b from-primary to-secondary ${comfortaa.className}`}
+      >
+        <ThemeProvider>
+          <Header />
+          {children}
+        </ThemeProvider>
+      </body>
     </html>
-  )
+  );
 }

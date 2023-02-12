@@ -1,44 +1,28 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { auth } from "firebaseConfig";
-import { signInWithEmailAndPassword } from "firebase/auth";
-
 import { RiBug2Fill } from "react-icons/ri";
-import { ThemeContext } from "./theme-provider";
+import { sendPasswordResetEmail } from "firebase/auth";
 
-const Home = () => {
-  const router = useRouter();
-  const { setUser } = useContext(ThemeContext);
+const PasswordReset = () => {
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  console.log("currentuser: ", auth.currentUser);
-
-  const signInEmail = async () => {
+  const resetPassword = async () => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
-      const user = userCredential.user;
-      // setUser(user);
-      router.push("/dashboard");
+      await sendPasswordResetEmail(auth, email);
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
-      alert("No user registered");
+      alert("Send Password Reset email error");
     }
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    signInEmail();
+    resetPassword();
     setEmail("");
-    setPassword("");
   };
 
   return (
@@ -59,25 +43,17 @@ const Home = () => {
             />
             <label className="label">Email address</label>
           </div>
-          <div className="relative">
-            <input
-              id="password"
-              type="password"
-              placeholder="Password"
-              className="input peer"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-            <label className="label">Password</label>
-          </div>
-          <button className="signin-button mt-4">Log In</button>
+          <button className="signin-button mt-4">Recover Password</button>
         </form>
+        <p className="text-white/50 text-sm text-center font-extralight italic">
+          Please check your email inbox and follow the link.
+        </p>
         <div className="w-full flex flex-row justify-between">
           <Link href="/signup" className="link">
             Sign Up
           </Link>
-          <Link href="/password_reset" className="link">
-            Forgot password?
+          <Link href="/" className="link">
+            Log In
           </Link>
         </div>
       </div>
@@ -85,4 +61,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default PasswordReset;
