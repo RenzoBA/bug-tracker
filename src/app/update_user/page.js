@@ -1,86 +1,33 @@
 "use client";
 
-import {
-  isSignInWithEmailLink,
-  signInWithEmailLink,
-  updatePassword,
-  updateProfile,
-} from "firebase/auth";
-import { auth } from "firebaseConfig";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
-import { ThemeContext } from "../theme-provider";
+import { useAuth } from "@/context/AuthProvider";
 
 const UpdateUser = () => {
-  const { setUser } = useContext(ThemeContext);
+  const { signInLink, updateUserInfo, updateUserPassword } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
-
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
-  console.log(
-    "local in update_user:",
-    window.localStorage.getItem("emailForSignIn")
-  );
-
+  // console.log("PHOTO URL: ", photoURL);
+  // signInLink();
   useEffect(() => {
-    const signInEmailLink = async () => {
-      if (isSignInWithEmailLink(auth, window.location.href)) {
-        let email = window.localStorage.getItem("emailForSignIn");
-        if (!email) {
-          email = window.prompt("please provide your email for confirmation");
-        }
-        try {
-          const result = await signInWithEmailLink(
-            auth,
-            email,
-            window.location.href
-          );
-          console.log("RESULT", result);
-          // setUser(result.user);
-          window.localStorage.removeItem("emailForSignIn");
-        } catch (error) {
-          alert("Sign In with email link error");
-        }
-      }
+    const getData = async () => {
+      await signInLink();
     };
-    signInEmailLink();
+    getData();
   }, []);
-
-  const updateInfo = async () => {
-    try {
-      await updateProfile(auth.currentUser, {
-        displayName: displayName,
-        photoURL: photoURL,
-        //ADD USER IMAGE UPLOAD
-
-        //add more profile info to update (creating useStates)
-      });
-    } catch (error) {
-      alert("Error updatying profile info");
-    }
-  };
-
-  const updatePass = async () => {
-    try {
-      if (password === confirmPassword) {
-        await updatePassword(auth.currentUser, password);
-      } else {
-        alert("Passwords do not match. Please try again");
-      }
-    } catch (error) {
-      alert("Error updatying password");
-    }
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateInfo();
-    updatePass();
+    updateUserInfo(displayName, photoURL);
+    updateUserPassword(password);
     router.push("/dashboard");
   };
 
@@ -90,15 +37,49 @@ const UpdateUser = () => {
         <h2 className="text-2xl lowercase text-decoration flex gap-1">
           bug tracker <RiBug2Fill className="text-3xl" />
         </h2>
-        <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-          <div>
+        <form
+          onSubmit={
+            password === confirmPassword
+              ? handleSubmit
+              : (e) => e.preventDefault
+          }
+          className="w-full flex flex-col gap-6 pt-5"
+        >
+          <div className="relative flex items-center justify-center">
             <input
+              id="image_upload"
+              name="image_upload"
               type="file"
               accept="image/png, image/jpeg"
-              value={photoURL}
-              onChange={(e) => setPhotoURL(e.target.value)}
+              onChange={(e) =>
+                setPhotoURL(URL.createObjectURL(e.currentTarget.files[0]))
+              }
+              className="hidden"
             />
-            {/* ADD USER IMAGE UPLOAD */}
+            {photoURL ? (
+              <div className="flex flex-col gap-2 items-center justify-center">
+                <Image
+                  src={photoURL}
+                  width={50}
+                  height={50}
+                  alt="user-photo"
+                  className="user-photo"
+                />
+                <label
+                  htmlFor="image_upload"
+                  className=" text-xs text-white/50 cursor-pointer border-2 border-white/50 p-1 rounded-lg h-fit hover:text-white"
+                >
+                  Change photo
+                </label>
+              </div>
+            ) : (
+              <label
+                htmlFor="image_upload"
+                className=" text-white/50 cursor-pointer border-2 border-white/50 p-2 rounded-lg"
+              >
+                Upload photo (png, jpg)
+              </label>
+            )}
           </div>
           <div className="relative">
             <input
@@ -136,6 +117,9 @@ const UpdateUser = () => {
             />
             <label className="label">Confirm password</label>
           </div>
+          {password !== confirmPassword && (
+            <p className="text-white/50 text-sm">Passwords do not match</p>
+          )}
           <button className="signin-button mt-4">Save</button>
         </form>
         <div className="w-full flex flex-row justify-between">
@@ -149,6 +133,7 @@ const UpdateUser = () => {
       </div>
     </div>
   );
+  //error, when you enter the signin link, you redirect to "/" because the currentUser still doesn't load
 };
 
 export default UpdateUser;

@@ -1,5 +1,5 @@
 import "./globals.css";
-import ThemeProvider from "@/app/theme-provider";
+import AuthProvider from "@/context/AuthProvider";
 import { Comfortaa } from "@next/font/google";
 import Header from "@/components/Header";
 
@@ -12,10 +12,11 @@ export default function RootLayout({ children }) {
       <body
         className={`text-white bg-gradient-to-b from-primary to-secondary ${comfortaa.className}`}
       >
-        <ThemeProvider>
+        <AuthProvider>
           <Header />
           {children}
-        </ThemeProvider>
+        </AuthProvider>
+        <div id="modal"></div>
       </body>
     </html>
   );
