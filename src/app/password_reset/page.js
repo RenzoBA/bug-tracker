@@ -27,13 +27,16 @@ const PasswordReset = () => {
             <div className="relative">
               <input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="Email address"
                 className="input peer"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <label className="label">Email address</label>
+              <label className="label" htmlFor="email">
+                Email address
+              </label>
             </div>
             <button className="signin-button mt-4">Recover Password</button>
           </form>

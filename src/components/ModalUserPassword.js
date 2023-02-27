@@ -39,6 +39,7 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
               id="password"
               type="password"
               placeholder="Password"
+              minLength={6}
               className="input peer"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -51,6 +52,7 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
               id="confirm-password"
               type="password"
               placeholder="Confirm password"
+              minLength={6}
               className="input peer"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}

@@ -29,25 +29,34 @@ const Home = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
             <div className="relative">
               <input
+                required
                 id="email"
+                name="email"
                 type="email"
                 placeholder="Email address"
                 className="input peer"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
-              <label className="label">Email address</label>
+              <label className="label" htmlFor="email">
+                Email address
+              </label>
             </div>
             <div className="relative">
               <input
+                required
                 id="password"
+                name="password"
                 type="password"
                 placeholder="Password"
+                minLength={6}
                 className="input peer"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />
-              <label className="label">Password</label>
+              <label className="label" htmlFor="password">
+                Password
+              </label>
             </div>
             <button className="signin-button mt-4">Log In</button>
           </form>

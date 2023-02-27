@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth } from "firebaseConfig";
+import { auth, db } from "firebaseConfig";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -14,6 +14,15 @@ import {
   signOut,
   deleteUser,
 } from "firebase/auth";
+import {
+  addDoc,
+  collection,
+  doc,
+  getDocs,
+  onSnapshot,
+  query,
+  setDoc,
+} from "firebase/firestore";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
@@ -22,23 +31,29 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
+  const [pid, setPid] = useState("project-test");
   const [categorySelected, setCategorySelected] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
 
   useEffect(() => {
-    const user = onAuthStateChanged(auth, (user) => {
-      if (user) {
-        setCurrentUser(user);
-      } else {
-        setCurrentUser(null);
+    const unsubscriber = onAuthStateChanged(auth, async (user) => {
+      try {
+        if (user) {
+          setCurrentUser(user);
+        } else {
+          setCurrentUser(null);
+        }
+      } catch (error) {
+        console.log("Connection Error");
+      } finally {
+        setLoading(false);
       }
-      console.log("useeffect user: ", currentUser);
-      setLoading(false);
     });
+    console.log("useeffect user: ", currentUser);
 
-    return user;
+    return () => unsubscriber();
   }, []);
 
   const signIn = async (email, password) => {
@@ -143,6 +158,64 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const createProject = async (projectData) => {
+    try {
+      const docRef = await addDoc(collection(db, "projects"), projectData);
+      console.log(docRef.id);
+      setPid(docRef.id);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
+  };
+
+  const createBugReport = async (bugData) => {
+    try {
+      const docRef = await addDoc(
+        collection(db, `projects/${pid}/bugs/`),
+        bugData
+      );
+      console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
+  };
+
+  const getBugReports = (setBugReports) => {
+    try {
+      console.log(`projects/${pid}/bugs/`);
+      const q = query(collection(db, `projects/${pid}/bugs/`));
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const bugs = [];
+        querySnapshot.forEach((doc) => {
+          bugs.push({ ...doc.data(), id: doc.id });
+        });
+        setBugReports(bugs);
+        // console.log("Current bugs: ", bugs.join(", "));
+      });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
+  };
+
+  const getDuration = (start, end) => {
+    const seconds = (end - start) / 1000;
+    return seconds < 60
+      ? "0 min"
+      : seconds < 3600
+      ? `${Math.round(seconds / 60)} min`
+      : seconds < 86400
+      ? `${Math.round(seconds / 3600)} h`
+      : seconds < 604800
+      ? `${Math.round(seconds / 86400)} d`
+      : new Date(start).toDateString();
+  };
+
   const value = {
     currentUser,
     categorySelected,
@@ -156,6 +229,10 @@ const AuthProvider = ({ children }) => {
     resetUserPassword,
     logOut,
     removeUser,
+    createProject,
+    createBugReport,
+    getBugReports,
+    getDuration,
   };
 
   return (

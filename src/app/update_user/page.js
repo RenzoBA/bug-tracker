@@ -28,7 +28,7 @@ const UpdateUser = () => {
     e.preventDefault();
     updateUserInfo(displayName, photoURL);
     updateUserPassword(password);
-    router.push("/dashboard");
+    router.push("/create_project");
   };
 
   return (
@@ -85,37 +85,48 @@ const UpdateUser = () => {
             <input
               required
               id="display-name"
+              name="display-name"
               type="text"
               placeholder="Display name"
               className="input peer"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
-            <label className="label">Display name</label>
+            <label className="label" htmlFor="display-name">
+              Display name
+            </label>
           </div>
           <div className="relative">
             <input
               required
               id="password"
+              name="password"
               type="password"
               placeholder="Password"
+              minLength={6}
               className="input peer"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <label className="label">Password</label>
+            <label className="label" htmlFor="password">
+              Password
+            </label>
           </div>
           <div className="relative">
             <input
               required
               id="confirm-password"
+              name="confirm-password"
               type="password"
               placeholder="Confirm password"
+              minLength={6}
               className="input peer"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-            <label className="label">Confirm password</label>
+            <label className="label" htmlFor="confirm-password">
+              Confirm password
+            </label>
           </div>
           {password !== confirmPassword && (
             <p className="text-white/50 text-sm">Passwords do not match</p>
