@@ -11,7 +11,8 @@ const UpdateUser = () => {
   const { signInLink, updateUserInfo, updateUserPassword } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
-  const [photoURL, setPhotoURL] = useState("");
+  const [photoFile, setPhotoFile] = useState("");
+  const [photoPreview, setPhotoPreview] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
@@ -24,9 +25,14 @@ const UpdateUser = () => {
     getData();
   }, []);
 
+  const handlePhoto = (e) => {
+    setPhotoFile(e.target.files[0]);
+    setPhotoPreview(URL.createObjectURL(e.target.files[0]));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUserInfo(displayName, photoURL);
+    updateUserInfo(displayName, photoFile);
     updateUserPassword(password);
     router.push("/create_project");
   };
@@ -51,15 +57,13 @@ const UpdateUser = () => {
               name="image_upload"
               type="file"
               accept="image/png, image/jpeg"
-              onChange={(e) =>
-                setPhotoURL(URL.createObjectURL(e.currentTarget.files[0]))
-              }
+              onChange={handlePhoto}
               className="hidden"
             />
-            {photoURL ? (
+            {photoPreview ? (
               <div className="flex flex-col gap-2 items-center justify-center">
                 <Image
-                  src={photoURL}
+                  src={photoPreview}
                   width={50}
                   height={50}
                   alt="user-photo"

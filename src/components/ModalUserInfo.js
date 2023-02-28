@@ -9,16 +9,34 @@ import { RiCloseFill } from "react-icons/ri";
 const ModalUserInfo = ({ setOpenModalUserInfo }) => {
   const { currentUser, updateUserInfo } = useAuth();
   const [displayName, setDisplayName] = useState(currentUser.displayName);
-  const [photoURL, setPhotoURL] = useState(currentUser.photoURL);
+  const [photoFile, setPhotoFile] = useState("");
+  const [photoPreview, setPhotoPreview] = useState("");
+
+  const handleKeyDown = (e) => {
+    e.key === "Escape" && setOpenModalUserInfo(false);
+  };
+
+  const handleBackdropClick = (e) => {
+    e.target === e.currentTarget && setOpenModalUserInfo(false);
+  };
+
+  const handlePhoto = (e) => {
+    setPhotoFile(e.target.files[0]);
+    setPhotoPreview(URL.createObjectURL(e.target.files[0]));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateUserInfo(displayName, photoURL);
+    updateUserInfo(displayName, photoFile);
     setOpenModalUserInfo(false);
   };
 
   return createPortal(
-    <div className="flex items-center justify-center min-h-screen w-full bg-black/50 absolute top-0 left-0 z-10">
+    <div
+      className="flex items-center justify-center min-h-screen w-full bg-black/50 absolute top-0 left-0 z-10"
+      onKeyDown={handleKeyDown}
+      onClick={handleBackdropClick}
+    >
       <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
         <div className="flex flex-row justify-between items-center w-full text-white/50 text-xl">
           <label className="text-decoration">Update User</label>
@@ -36,15 +54,13 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
               name="image_upload"
               type="file"
               accept="image/png, image/jpeg"
-              onChange={(e) =>
-                setPhotoURL(URL.createObjectURL(e.currentTarget.files[0]))
-              }
+              onChange={handlePhoto}
               className="hidden"
             />
-            {photoURL ? (
+            {currentUser.photoURL ? (
               <div className="flex flex-col gap-2 items-center justify-center">
                 <Image
-                  src={photoURL}
+                  src={photoPreview || currentUser.photoURL}
                   width={50}
                   height={50}
                   alt="user-photo"
@@ -68,6 +84,7 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
           </div>
           <div className="relative">
             <input
+              autoFocus
               id="display-name"
               type="text"
               placeholder="Display name"

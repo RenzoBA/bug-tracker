@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useContext, useEffect, useState } from "react";
-import { auth, db } from "firebaseConfig";
+import { auth, db, storage } from "firebaseConfig";
 import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
@@ -23,6 +23,7 @@ import {
   query,
   setDoc,
 } from "firebase/firestore";
+import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
 
 const AuthContext = createContext();
@@ -103,12 +104,21 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUserInfo = async (displayName, photoURL) => {
+  const updateUserInfo = async (displayName, file) => {
     try {
-      await updateProfile(auth.currentUser, {
-        displayName: displayName,
-        photoURL: photoURL,
-      });
+      if (file !== "") {
+        const fileRef = ref(storage, `users/${auth.currentUser.uid}`);
+        const snapshot = await uploadBytes(fileRef, file);
+        const photoURL = await getDownloadURL(fileRef);
+        await updateProfile(auth.currentUser, {
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+      } else {
+        await updateProfile(auth.currentUser, {
+          displayName: displayName,
+        });
+      }
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -194,7 +204,6 @@ const AuthProvider = ({ children }) => {
           bugs.push({ ...doc.data(), id: doc.id });
         });
         setBugReports(bugs);
-        // console.log("Current bugs: ", bugs.join(", "));
       });
     } catch (error) {
       const errorCode = error.code;
@@ -202,6 +211,21 @@ const AuthProvider = ({ children }) => {
       console.log(errorCode, errorMessage);
     }
   };
+
+  // const uploadFile = async (file) => {
+  //   try {
+  //     console.log("file: ", file);
+  //     const fileRef = ref(storage, `users/${auth.currentUser.uid}`);
+
+  //     const snapshot = await uploadBytes(fileRef, file);
+  //     const URL = await getDownloadURL(fileRef);
+  //     return URL;
+  //   } catch (error) {
+  //     const errorCode = error.code;
+  //     const errorMessage = error.message;
+  //     console.log(errorCode, errorMessage);
+  //   }
+  // };
 
   const getDuration = (start, end) => {
     const seconds = (end - start) / 1000;

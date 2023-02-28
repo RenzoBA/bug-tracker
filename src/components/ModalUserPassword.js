@@ -10,6 +10,14 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
 
+  const handleKeyDown = (e) => {
+    e.key === "Escape" && setOpenModalUserPassword(false);
+  };
+
+  const handleBackdropClick = (e) => {
+    e.target === e.currentTarget && setOpenModalUserPassword(false);
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
     updateUserPassword(password);
@@ -17,7 +25,11 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
   };
 
   return createPortal(
-    <div className="flex items-center justify-center min-h-screen w-full bg-black/50 absolute top-0 left-0 z-10">
+    <div
+      className="flex items-center justify-center min-h-screen w-full bg-black/50 absolute top-0 left-0 z-10"
+      onKeyDown={handleKeyDown}
+      onClick={handleBackdropClick}
+    >
       <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
         <div className="flex flex-row justify-between items-center w-full text-white/50 text-xl">
           <label className="text-decoration">Update Password</label>
@@ -36,6 +48,7 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
           <div className="relative">
             <input
               required
+              autoFocus
               id="password"
               type="password"
               placeholder="Password"
