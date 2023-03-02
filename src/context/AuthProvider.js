@@ -32,7 +32,7 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  const [pid, setPid] = useState("project-test");
+  // const [pid, setPid] = useState("project-test");
   const [categorySelected, setCategorySelected] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -52,7 +52,6 @@ const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     });
-    console.log("useeffect user: ", currentUser);
 
     return () => unsubscriber();
   }, []);
@@ -64,7 +63,7 @@ const AuthProvider = ({ children }) => {
         email,
         password
       );
-      router.push("/dashboard");
+      router.push("/create_project");
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -171,8 +170,21 @@ const AuthProvider = ({ children }) => {
   const createProject = async (projectData) => {
     try {
       const docRef = await addDoc(collection(db, "projects"), projectData);
-      console.log(docRef.id);
-      setPid(docRef.id);
+      await addDoc(collection(db, `users/${currentUser.uid}/projects`), {
+        pid: docRef.id,
+      });
+    } catch (error) {
+      const errorCode = error.code;
+      const errorMessage = error.message;
+      console.log(errorCode, errorMessage);
+    }
+  };
+
+  const joinProject = async (pid) => {
+    try {
+      await addDoc(collection(db, `users/${currentUser.uid}/projects`), {
+        pid: pid,
+      });
     } catch (error) {
       const errorCode = error.code;
       const errorMessage = error.message;
@@ -182,6 +194,14 @@ const AuthProvider = ({ children }) => {
 
   const createBugReport = async (bugData) => {
     try {
+      let pid;
+      const qPid = query(collection(db, `users/${currentUser.uid}/projects`));
+      const querySnapshot = await getDocs(qPid);
+
+      querySnapshot.forEach((doc) => {
+        pid = doc.data().pid;
+      });
+
       const docRef = await addDoc(
         collection(db, `projects/${pid}/bugs/`),
         bugData
@@ -194,14 +214,21 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getBugReports = (setBugReports) => {
+  const getBugReports = async (setBugReports) => {
     try {
-      console.log(`projects/${pid}/bugs/`);
-      const q = query(collection(db, `projects/${pid}/bugs/`));
-      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+      let pid;
+      const qPid = query(collection(db, `users/${currentUser.uid}/projects`));
+      const querySnapshot = await getDocs(qPid);
+      //review how add members team
+      querySnapshot.forEach((doc) => {
+        pid = doc.data().pid;
+      });
+
+      const qBugs = query(collection(db, `projects/${pid}/bugs/`));
+      const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
         const bugs = [];
         querySnapshot.forEach((doc) => {
-          bugs.push({ ...doc.data(), id: doc.id });
+          bugs.push({ ...doc.data(), bid: doc.id });
         });
         setBugReports(bugs);
       });
@@ -211,21 +238,6 @@ const AuthProvider = ({ children }) => {
       console.log(errorCode, errorMessage);
     }
   };
-
-  // const uploadFile = async (file) => {
-  //   try {
-  //     console.log("file: ", file);
-  //     const fileRef = ref(storage, `users/${auth.currentUser.uid}`);
-
-  //     const snapshot = await uploadBytes(fileRef, file);
-  //     const URL = await getDownloadURL(fileRef);
-  //     return URL;
-  //   } catch (error) {
-  //     const errorCode = error.code;
-  //     const errorMessage = error.message;
-  //     console.log(errorCode, errorMessage);
-  //   }
-  // };
 
   const getDuration = (start, end) => {
     const seconds = (end - start) / 1000;
@@ -254,6 +266,7 @@ const AuthProvider = ({ children }) => {
     logOut,
     removeUser,
     createProject,
+    joinProject,
     createBugReport,
     getBugReports,
     getDuration,

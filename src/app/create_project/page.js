@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
 import { RiUser3Fill } from "react-icons/ri";
+import Link from "next/link";
 
 const CreateProject = () => {
   const { currentUser, createProject } = useAuth();
@@ -121,6 +122,9 @@ const CreateProject = () => {
 
             <button className="signin-button mt-4">Create Project</button>
           </form>
+          <Link href={"/join_project"} className="link">
+            Join project
+          </Link>
         </div>
       </div>
     );
