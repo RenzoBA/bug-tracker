@@ -18,6 +18,7 @@ import {
   addDoc,
   collection,
   doc,
+  getDoc,
   getDocs,
   onSnapshot,
   query,
@@ -32,7 +33,7 @@ export const useAuth = () => useContext(AuthContext);
 
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
-  // const [pid, setPid] = useState("project-test");
+  const [currentPid, setCurrentPid] = useState("");
   const [categorySelected, setCategorySelected] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -42,7 +43,16 @@ const AuthProvider = ({ children }) => {
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
-          setCurrentUser(user);
+          let pids = [];
+          const qPid = query(collection(db, `users/${user.uid}/projects`));
+          const querySnapshot = await getDocs(qPid);
+          querySnapshot.forEach((doc) => {
+            pids.push(doc.id);
+          });
+          if (pids.length !== 0) {
+            setCurrentPid(pids[0]);
+          }
+          setCurrentUser({ ...user, pids: pids });
         } else {
           setCurrentUser(null);
         }
@@ -52,7 +62,6 @@ const AuthProvider = ({ children }) => {
         setLoading(false);
       }
     });
-
     return () => unsubscriber();
   }, []);
 
@@ -63,11 +72,23 @@ const AuthProvider = ({ children }) => {
         email,
         password
       );
-      router.push("/create_project");
+
+      let pids = [];
+      const qPid = query(
+        collection(db, `users/${userCredential.user.uid}/projects`)
+      );
+      const querySnapshot = await getDocs(qPid);
+      querySnapshot.forEach((doc) => {
+        pids.push(doc.id);
+      });
+      if (pids.length !== 0) {
+        setCurrentPid(pids[0]);
+        router.push("/dashboard");
+      } else {
+        router.push("/create_project");
+      }
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -80,9 +101,7 @@ const AuthProvider = ({ children }) => {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -96,9 +115,7 @@ const AuthProvider = ({ children }) => {
         await signInWithEmailLink(auth, email, window.location.href);
         window.localStorage.removeItem("emailForSignIn");
       } catch (error) {
-        const errorCode = error.code;
-        const errorMessage = error.message;
-        console.log(errorCode, errorMessage);
+        console.log(error.message);
       }
     }
   };
@@ -119,9 +136,7 @@ const AuthProvider = ({ children }) => {
         });
       }
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -129,9 +144,7 @@ const AuthProvider = ({ children }) => {
     try {
       await updatePassword(auth.currentUser, newPassword);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -139,9 +152,7 @@ const AuthProvider = ({ children }) => {
     try {
       await sendPasswordResetEmail(auth, email);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -150,9 +161,7 @@ const AuthProvider = ({ children }) => {
       await signOut(auth);
       router.push("/");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
@@ -161,70 +170,51 @@ const AuthProvider = ({ children }) => {
       await deleteUser(auth.currentUser);
       router.push("/");
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
   const createProject = async (projectData) => {
     try {
       const docRef = await addDoc(collection(db, "projects"), projectData);
-      await addDoc(collection(db, `users/${currentUser.uid}/projects`), {
-        pid: docRef.id,
-      });
+      await setDoc(
+        doc(db, `users/${currentUser.uid}/projects/${docRef.id}`),
+        projectData
+      );
+      setCurrentPid(docRef.id);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
   const joinProject = async (pid) => {
     try {
-      await addDoc(collection(db, `users/${currentUser.uid}/projects`), {
-        pid: pid,
-      });
+      const projectData = await getDoc(doc(db, `projects/${pid}`));
+      await setDoc(
+        doc(db, `users/${currentUser.uid}/projects/${pid}`),
+        projectData.data()
+      );
+      setCurrentPid(pid);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
   const createBugReport = async (bugData) => {
     try {
-      let pid;
-      const qPid = query(collection(db, `users/${currentUser.uid}/projects`));
-      const querySnapshot = await getDocs(qPid);
-
-      querySnapshot.forEach((doc) => {
-        pid = doc.data().pid;
-      });
-
       const docRef = await addDoc(
-        collection(db, `projects/${pid}/bugs/`),
+        collection(db, `projects/${currentPid}/bugs/`),
         bugData
       );
       console.log("Document written with ID: ", docRef.id);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 
   const getBugReports = async (setBugReports) => {
     try {
-      let pid;
-      const qPid = query(collection(db, `users/${currentUser.uid}/projects`));
-      const querySnapshot = await getDocs(qPid);
-      //review how add members team
-      querySnapshot.forEach((doc) => {
-        pid = doc.data().pid;
-      });
-
-      const qBugs = query(collection(db, `projects/${pid}/bugs/`));
+      const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
       const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
         const bugs = [];
         querySnapshot.forEach((doc) => {
@@ -232,10 +222,9 @@ const AuthProvider = ({ children }) => {
         });
         setBugReports(bugs);
       });
+      console.log("currentUser: ", currentUser);
     } catch (error) {
-      const errorCode = error.code;
-      const errorMessage = error.message;
-      console.log(errorCode, errorMessage);
+      console.log(error.message);
     }
   };
 

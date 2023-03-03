@@ -14,13 +14,11 @@ const Dashboard = () => {
     getBugReports(setBugReports);
   }, []);
 
-  console.log(bugReports);
-
   if (currentUser) {
     return (
       <div className="flex flex-wrap gap-3 items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
         {bugReports.map((bug) => (
-          <CardBug bug={bug} key={bug.id} />
+          <CardBug bug={bug} key={bug.bid} />
         ))}
         <button className="p-2 border" onClick={logOut}>
           log Out
