@@ -15,14 +15,14 @@ import {
   deleteUser,
 } from "firebase/auth";
 import {
+  setDoc,
   addDoc,
-  collection,
-  doc,
   getDoc,
   getDocs,
   onSnapshot,
   query,
-  setDoc,
+  doc,
+  collection,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -44,8 +44,9 @@ const AuthProvider = ({ children }) => {
       try {
         if (user) {
           let pids = [];
-          const qPid = query(collection(db, `users/${user.uid}/projects`));
-          const querySnapshot = await getDocs(qPid);
+          const querySnapshot = await getDocs(
+            collection(db, `users/${user.uid}/projects`)
+          );
           querySnapshot.forEach((doc) => {
             pids.push(doc.id);
           });
@@ -74,10 +75,9 @@ const AuthProvider = ({ children }) => {
       );
 
       let pids = [];
-      const qPid = query(
+      const querySnapshot = await getDocs(
         collection(db, `users/${userCredential.user.uid}/projects`)
       );
-      const querySnapshot = await getDocs(qPid);
       querySnapshot.forEach((doc) => {
         pids.push(doc.id);
       });
