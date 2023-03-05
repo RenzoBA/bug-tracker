@@ -34,7 +34,7 @@ export const useAuth = () => useContext(AuthContext);
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPid, setCurrentPid] = useState("");
-  const [categorySelected, setCategorySelected] = useState(null);
+  const [categorySelected, setCategorySelected] = useState("dashboard");
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -130,9 +130,19 @@ const AuthProvider = ({ children }) => {
           displayName: displayName,
           photoURL: photoURL,
         });
+        await setDoc(doc(db, `users/${currentUser.uid}`), {
+          displayName: displayName,
+          photoURL: photoURL,
+          email: currentUser.email,
+        });
       } else {
         await updateProfile(auth.currentUser, {
           displayName: displayName,
+        });
+        await setDoc(doc(db, `users/${currentUser.uid}`), {
+          displayName: displayName,
+          photoURL: "",
+          email: currentUser.email,
         });
       }
     } catch (error) {
@@ -163,6 +173,11 @@ const AuthProvider = ({ children }) => {
     } catch (error) {
       console.log(error.message);
     }
+  };
+
+  const getUserInfo = async (uid) => {
+    const userInfo = await getDoc(doc(db, `users/${uid}`));
+    return userInfo.data();
   };
 
   const removeUser = async () => {
@@ -231,13 +246,13 @@ const AuthProvider = ({ children }) => {
   const getDuration = (start, end) => {
     const seconds = (end - start) / 1000;
     return seconds < 60
-      ? "0 min"
+      ? "0m ago"
       : seconds < 3600
-      ? `${Math.round(seconds / 60)} min`
+      ? `${Math.round(seconds / 60)}m ago`
       : seconds < 86400
-      ? `${Math.round(seconds / 3600)} h`
+      ? `${Math.round(seconds / 3600)}h ago`
       : seconds < 604800
-      ? `${Math.round(seconds / 86400)} d`
+      ? `${Math.round(seconds / 86400)}d ago`
       : new Date(start).toDateString();
   };
 
@@ -253,6 +268,7 @@ const AuthProvider = ({ children }) => {
     updateUserPassword,
     resetUserPassword,
     logOut,
+    getUserInfo,
     removeUser,
     createProject,
     joinProject,

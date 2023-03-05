@@ -18,6 +18,7 @@ const DashboardReportIncident = () => {
     priority: "",
     responsable: responsableValue,
     tags: "",
+    //add comments section?
   });
 
   const handleResponsable = (e) => {
@@ -76,7 +77,7 @@ const DashboardReportIncident = () => {
             )}
             <div className="relative">
               <label className="label-2" htmlFor="owner">
-                Owner
+                Owner (you)
               </label>
               <p
                 id="owner"

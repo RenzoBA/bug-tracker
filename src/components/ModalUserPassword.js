@@ -30,7 +30,7 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
       onKeyDown={handleKeyDown}
       onClick={handleBackdropClick}
     >
-      <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
+      <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] mx-5 rounded-md w-full sm:w-[28rem]">
         <div className="flex flex-row justify-between items-center w-full text-white/50 text-xl">
           <label className="text-decoration">Update Password</label>
           <button onClick={() => setOpenModalUserPassword(false)}>
