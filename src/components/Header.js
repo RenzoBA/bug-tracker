@@ -20,19 +20,18 @@ const Header = () => {
         onClick={() => setCategorySelected("user")}
         className="flex flex-row items-center gap-2 text-2xl"
       >
-        {!currentUser ? (
-          <RiUser3Fill className="text-white/50" />
-        ) : !currentUser.photoURL ? (
-          <RiUser3Fill className="text-decoration" />
-        ) : (
-          <Image
-            src={currentUser.photoURL}
-            width={30}
-            height={30}
-            alt="user-photo"
-            className="user-photo"
-          />
-        )}
+        {currentUser &&
+          (!currentUser.photoURL ? (
+            <RiUser3Fill className="text-decoration" />
+          ) : (
+            <Image
+              src={currentUser.photoURL}
+              width={30}
+              height={30}
+              alt="user-photo"
+              className="user-photo"
+            />
+          ))}
       </Link>
     </div>
   );

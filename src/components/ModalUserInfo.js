@@ -23,6 +23,7 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
   const handlePhoto = (e) => {
     setPhotoFile(e.target.files[0]);
     setPhotoPreview(URL.createObjectURL(e.target.files[0]));
+    console.log("photoFile (modalUserInfo): ", photoFile);
   };
 
   const handleSubmit = (e) => {

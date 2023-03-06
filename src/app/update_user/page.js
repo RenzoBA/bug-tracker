@@ -28,6 +28,7 @@ const UpdateUser = () => {
   const handlePhoto = (e) => {
     setPhotoFile(e.target.files[0]);
     setPhotoPreview(URL.createObjectURL(e.target.files[0]));
+    console.log("photoFile (update_user page): ", photoFile);
   };
 
   const handleSubmit = (e) => {
@@ -47,7 +48,7 @@ const UpdateUser = () => {
           onSubmit={
             password === confirmPassword
               ? handleSubmit
-              : (e) => e.preventDefault
+              : (e) => e.preventDefault()
           }
           className="w-full flex flex-col gap-6 pt-5"
         >

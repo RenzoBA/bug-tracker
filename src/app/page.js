@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 import { useAuth } from "@/context/AuthProvider";
+import Modal from "@/components/Modal";
 
 const Home = () => {
   const { currentUser, signIn } = useAuth();
@@ -69,6 +70,10 @@ const Home = () => {
             </Link>
           </div>
         </div>
+        <Modal>
+          <p className="font-bold">Login Failed</p>
+          <p>Incorrect email or password.</p>
+        </Modal>
       </div>
     );
   }

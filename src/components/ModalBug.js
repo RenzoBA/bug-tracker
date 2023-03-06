@@ -64,8 +64,8 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
                   src={userInfo.photoURL}
                   width={50}
                   height={50}
-                  className="user-photo mt-1"
                   alt="user-photo"
+                  className="user-photo mt-1"
                 />
                 <div className="flex flex-col justify-between">
                   <p className="text-lg">{userInfo.displayName}</p>

@@ -43,9 +43,10 @@ const AuthProvider = ({ children }) => {
     const unsubscriber = onAuthStateChanged(auth, async (user) => {
       try {
         if (user) {
+          const { uid, displayName, email, photoURL } = user;
           let pids = [];
           const querySnapshot = await getDocs(
-            collection(db, `users/${user.uid}/projects`)
+            collection(db, `users/${uid}/projects`)
           );
           querySnapshot.forEach((doc) => {
             pids.push(doc.id);
@@ -53,18 +54,19 @@ const AuthProvider = ({ children }) => {
           if (pids.length !== 0) {
             setCurrentPid(pids[0]);
           }
-          setCurrentUser({ ...user, pids: pids });
+          setCurrentUser({ uid, displayName, email, photoURL, pids });
+          // console.log("currentUser (useEffect): ", currentUser);
         } else {
           setCurrentUser(null);
         }
       } catch (error) {
-        console.log("Connection Error");
+        console.log("Connection Error: ", error.message);
       } finally {
         setLoading(false);
       }
     });
     return () => unsubscriber();
-  }, []);
+  });
 
   const signIn = async (email, password) => {
     try {
@@ -205,6 +207,7 @@ const AuthProvider = ({ children }) => {
   const joinProject = async (pid) => {
     try {
       const projectData = await getDoc(doc(db, `projects/${pid}`));
+      console.log("projectData (join Project): ", projectData.data());
       await setDoc(
         doc(db, `users/${currentUser.uid}/projects/${pid}`),
         projectData.data()
