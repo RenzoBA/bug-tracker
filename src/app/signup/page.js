@@ -5,15 +5,17 @@ import { useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 import { useAuth } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
+import Modal from "@/components/Modal";
 
 const Signup = () => {
   const { currentUser, sendSignInLink } = useAuth();
   const [email, setEmail] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    sendSignInLink("http://localhost:3000/update_user", email);
+    sendSignInLink("http://localhost:3000/update_user", email, setOpenModal);
     setEmail("");
   };
 
@@ -27,6 +29,7 @@ const Signup = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
             <div className="relative">
               <input
+                required
                 id="email"
                 name="email"
                 type="email"
@@ -50,6 +53,12 @@ const Signup = () => {
             </Link>
           </div>
         </div>
+        {openModal && (
+          <Modal setOpenModal={setOpenModal}>
+            <p className="font-bold">Sign up successful</p>
+            <p>Please check your email inbox.</p>
+          </Modal>
+        )}
       </div>
     );
   }

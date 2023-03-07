@@ -1,5 +1,6 @@
 "use client";
 
+import Modal from "@/components/Modal";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { useState } from "react";
@@ -8,6 +9,7 @@ import { RiUser3Fill } from "react-icons/ri";
 const DashboardReportIncident = () => {
   const { currentUser, createBugReport } = useAuth();
   const [responsableValue, setResponsableValue] = useState([]);
+  const [openModal, setOpenModal] = useState(false);
   console.log(responsableValue);
   const [bugData, setBugData] = useState({
     date: Date.now(),
@@ -41,7 +43,7 @@ const DashboardReportIncident = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createBugReport(bugData);
+    createBugReport(bugData, setOpenModal);
     setBugData({
       date: Date.now(),
       owner: currentUser.uid,
@@ -232,6 +234,12 @@ const DashboardReportIncident = () => {
           <button className="signin-button mt-4">Add Bug</button>
         </form>
       </div>
+      {openModal && (
+        <Modal setOpenModal={setOpenModal}>
+          <p className="font-bold">Bug added</p>
+          <p>New bug has been added.</p>
+        </Modal>
+      )}
     </div>
   );
 };

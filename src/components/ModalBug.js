@@ -7,7 +7,7 @@ import { createPortal } from "react-dom";
 import { RiCloseFill } from "react-icons/ri";
 
 const ModalBug = ({ setOpenModalBug, bug }) => {
-  const { getDuration, getUserInfo } = useAuth();
+  const { getDuration, getUserInfo, deleteBugReport } = useAuth();
   const [userInfo, setUserInfo] = useState([]);
 
   useEffect(() => {
@@ -18,13 +18,10 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     getData();
   }, []);
 
-  console.log("USER:", userInfo);
-
   const handleKeyDown = (e) => {
     e.key === "Escape" && setOpenModalBug(false);
   };
   const handleBackdropClick = (e) => {
-    console.log(e);
     e.target === e.currentTarget && setOpenModalBug(false);
   };
 
@@ -41,7 +38,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
             <RiCloseFill />
           </button>
         </div>
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-4 mt-4">
           <div>
             <p className="font-light text-white/50">
               {"#" + bug.tags.replaceAll(/[^A-Za-z0-9_']+/g, " #")}
@@ -54,6 +51,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <span>{getDuration(bug.date, Date.now())}</span>
             </div>
           </div>
+          <hr className="border-white/5" />
           <div className="flex flex-col gap-5">
             <div>
               <label htmlFor="resume" className="text-white/50 text-sm">
@@ -92,6 +90,18 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <p id="date">{new Date(bug.date).toUTCString()}</p>
             </div>
           </div>
+          <hr className="border-white/5" />
+          <div className="flex justify-around">
+            <button className="text-white/50 hover:text-white">update</button>
+            <button className="text-white/50 hover:text-white">complete</button>
+            <button
+              onClick={() => deleteBugReport(bug.bid)}
+              className="text-red-500/50 hover:text-red-500"
+            >
+              delete
+            </button>
+          </div>
+          <hr className="border-white/5" />
         </div>
       </div>
     </div>,

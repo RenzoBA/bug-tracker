@@ -1,5 +1,6 @@
 "use client";
 
+import Modal from "@/components/Modal";
 import { useAuth } from "@/context/AuthProvider";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -9,11 +10,17 @@ import { RiBug2Fill } from "react-icons/ri";
 const PasswordReset = () => {
   const { currentUser, resetUserPassword } = useAuth();
   const [email, setEmail] = useState("");
+  const [openModalPasswordReset, setOpenModalPasswordReset] = useState(false);
+  const [openModalUserNotFound, setOpenModalUserNotFound] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    resetUserPassword(email);
+    resetUserPassword(
+      email,
+      setOpenModalPasswordReset,
+      setOpenModalUserNotFound
+    );
     setEmail("");
   };
   if (!currentUser) {
@@ -26,6 +33,7 @@ const PasswordReset = () => {
           <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
             <div className="relative">
               <input
+                required
                 id="email"
                 name="email"
                 type="email"
@@ -38,7 +46,7 @@ const PasswordReset = () => {
                 Email address
               </label>
             </div>
-            <button className="signin-button mt-4">Recover Password</button>
+            <button className="signin-button mt-4">Reset Password</button>
           </form>
           <p className="text-white/50 text-sm text-center font-extralight italic">
             Please check your email inbox and follow the link.
@@ -52,6 +60,18 @@ const PasswordReset = () => {
             </Link>
           </div>
         </div>
+        {openModalPasswordReset && (
+          <Modal setOpenModal={setOpenModalPasswordReset}>
+            <p className="font-bold">Password reset successful</p>
+            <p>Please check your email inbox.</p>
+          </Modal>
+        )}
+        {openModalUserNotFound && (
+          <Modal setOpenModal={setOpenModalUserNotFound}>
+            <p className="font-bold">User not found</p>
+            <p>Please enter a correct email.</p>
+          </Modal>
+        )}
       </div>
     );
   }

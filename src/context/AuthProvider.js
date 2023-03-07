@@ -23,6 +23,7 @@ import {
   query,
   doc,
   collection,
+  deleteDoc,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -68,14 +69,14 @@ const AuthProvider = ({ children }) => {
     return () => unsubscriber();
   });
 
-  const signIn = async (email, password) => {
+  const signIn = async (email, password, setOpenModal) => {
     try {
+      setOpenModal(false);
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
-
       let pids = [];
       const querySnapshot = await getDocs(
         collection(db, `users/${userCredential.user.uid}/projects`)
@@ -90,11 +91,12 @@ const AuthProvider = ({ children }) => {
         router.push("/create_project");
       }
     } catch (error) {
+      setOpenModal(true);
       console.log(error.message);
     }
   };
 
-  const sendSignInLink = async (url, email) => {
+  const sendSignInLink = async (url, email, setOpenModal) => {
     const actionCodeSettings = {
       url: url,
       handleCodeInApp: true,
@@ -102,6 +104,7 @@ const AuthProvider = ({ children }) => {
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
+      setOpenModal(true);
     } catch (error) {
       console.log(error.message);
     }
@@ -143,7 +146,6 @@ const AuthProvider = ({ children }) => {
         });
         await setDoc(doc(db, `users/${currentUser.uid}`), {
           displayName: displayName,
-          photoURL: "",
           email: currentUser.email,
         });
       }
@@ -160,10 +162,18 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const resetUserPassword = async (email) => {
+  const resetUserPassword = async (
+    email,
+    setOpenModalPasswordReset,
+    setOpenModalUserNotFound
+  ) => {
     try {
+      setOpenModalUserNotFound(false);
       await sendPasswordResetEmail(auth, email);
+      setOpenModalPasswordReset(true);
     } catch (error) {
+      setOpenModalPasswordReset(false);
+      setOpenModalUserNotFound(true);
       console.log(error.message);
     }
   };
@@ -218,13 +228,22 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const createBugReport = async (bugData) => {
+  const createBugReport = async (bugData, setOpenModal) => {
     try {
       const docRef = await addDoc(
         collection(db, `projects/${currentPid}/bugs/`),
         bugData
       );
+      setOpenModal(true);
       console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const deleteBugReport = async (bid) => {
+    try {
+      await deleteDoc(doc(db, `projects/${currentPid}/bugs`, bid));
     } catch (error) {
       console.log(error.message);
     }
@@ -276,6 +295,7 @@ const AuthProvider = ({ children }) => {
     createProject,
     joinProject,
     createBugReport,
+    deleteBugReport,
     getBugReports,
     getDuration,
   };

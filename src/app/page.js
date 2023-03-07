@@ -11,11 +11,12 @@ const Home = () => {
   const { currentUser, signIn } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    signIn(email, password);
+    signIn(email, password, setOpenModal);
     setEmail("");
     setPassword("");
   };
@@ -70,10 +71,12 @@ const Home = () => {
             </Link>
           </div>
         </div>
-        <Modal>
-          <p className="font-bold">Login Failed</p>
-          <p>Incorrect email or password.</p>
-        </Modal>
+        {openModal && (
+          <Modal setOpenModal={setOpenModal}>
+            <p className="font-bold">Login Failed</p>
+            <p>Incorrect email or password.</p>
+          </Modal>
+        )}
       </div>
     );
   }
