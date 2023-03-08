@@ -7,7 +7,8 @@ import { createPortal } from "react-dom";
 import { RiCloseFill } from "react-icons/ri";
 
 const ModalBug = ({ setOpenModalBug, bug }) => {
-  const { getDuration, getUserInfo, deleteBugReport } = useAuth();
+  const { getDuration, getUserInfo, deleteBugReport, completeBugReport } =
+    useAuth();
   const [userInfo, setUserInfo] = useState([]);
 
   useEffect(() => {
@@ -17,6 +18,8 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     };
     getData();
   }, []);
+
+  console.log("modal");
 
   const handleKeyDown = (e) => {
     e.key === "Escape" && setOpenModalBug(false);
@@ -50,6 +53,9 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               </span>
               <span>{getDuration(bug.date, Date.now())}</span>
             </div>
+            {bug.complete && (
+              <p className="text-green-600 text-xl font-bold my-2">completed</p>
+            )}
           </div>
           <hr className="border-white/5" />
           <div className="flex flex-col gap-5">
@@ -93,7 +99,12 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
           <hr className="border-white/5" />
           <div className="flex justify-around">
             <button className="text-white/50 hover:text-white">update</button>
-            <button className="text-white/50 hover:text-white">complete</button>
+            <button
+              onClick={() => completeBugReport(bug.bid, bug.complete)}
+              className="text-white/50 hover:text-white"
+            >
+              {bug.complete ? "incomplete" : "complete"}
+            </button>
             <button
               onClick={() => deleteBugReport(bug.bid)}
               className="text-red-500/50 hover:text-red-500"

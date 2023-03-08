@@ -24,6 +24,8 @@ import {
   doc,
   collection,
   deleteDoc,
+  updateDoc,
+  serverTimestamp,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -36,6 +38,11 @@ const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPid, setCurrentPid] = useState("");
   const [categorySelected, setCategorySelected] = useState("dashboard");
+  const [modal, setModal] = useState({
+    open: false,
+    title: "",
+    description: "",
+  });
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -67,7 +74,7 @@ const AuthProvider = ({ children }) => {
       }
     });
     return () => unsubscriber();
-  });
+  }, []);
 
   const signIn = async (email, password, setOpenModal) => {
     try {
@@ -149,6 +156,11 @@ const AuthProvider = ({ children }) => {
           email: currentUser.email,
         });
       }
+      setModal({
+        open: true,
+        title: "User updated",
+        description: "Your information was updated.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -157,6 +169,11 @@ const AuthProvider = ({ children }) => {
   const updateUserPassword = async (newPassword) => {
     try {
       await updatePassword(auth.currentUser, newPassword);
+      setModal({
+        open: true,
+        title: "Password updated",
+        description: "Your password was updated.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -228,14 +245,35 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const createBugReport = async (bugData, setOpenModal) => {
+  const createBugReport = async (bugData) => {
     try {
       const docRef = await addDoc(
         collection(db, `projects/${currentPid}/bugs/`),
         bugData
       );
-      setOpenModal(true);
+      setModal({
+        open: true,
+        title: "Bug added",
+        description: "This bug was added.",
+      });
       console.log("Document written with ID: ", docRef.id);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const completeBugReport = async (bid, complete) => {
+    try {
+      console.log(`projects/${currentPid}/bugs/${bid}`);
+      await updateDoc(doc(db, `projects/${currentPid}/bugs/${bid}`), {
+        complete: !complete,
+        updated: serverTimestamp(),
+      });
+      setModal({
+        open: !complete,
+        title: "Bug completed",
+        description: "This bug was completed.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -244,6 +282,11 @@ const AuthProvider = ({ children }) => {
   const deleteBugReport = async (bid) => {
     try {
       await deleteDoc(doc(db, `projects/${currentPid}/bugs`, bid));
+      setModal({
+        open: true,
+        title: "Bug deleted",
+        description: "This bug was deleted.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -280,6 +323,8 @@ const AuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
+    modal,
+    setModal,
     categorySelected,
     setCategorySelected,
     loading,
@@ -295,6 +340,7 @@ const AuthProvider = ({ children }) => {
     createProject,
     joinProject,
     createBugReport,
+    completeBugReport,
     deleteBugReport,
     getBugReports,
     getDuration,

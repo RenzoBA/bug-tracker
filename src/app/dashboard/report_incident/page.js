@@ -9,7 +9,6 @@ import { RiUser3Fill } from "react-icons/ri";
 const DashboardReportIncident = () => {
   const { currentUser, createBugReport } = useAuth();
   const [responsableValue, setResponsableValue] = useState([]);
-  const [openModal, setOpenModal] = useState(false);
   console.log(responsableValue);
   const [bugData, setBugData] = useState({
     date: Date.now(),
@@ -20,6 +19,7 @@ const DashboardReportIncident = () => {
     priority: "",
     responsable: responsableValue,
     tags: "",
+    complete: false,
     //add comments section?
   });
 
@@ -43,7 +43,7 @@ const DashboardReportIncident = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    createBugReport(bugData, setOpenModal);
+    createBugReport(bugData);
     setBugData({
       date: Date.now(),
       owner: currentUser.uid,
@@ -55,6 +55,7 @@ const DashboardReportIncident = () => {
         team: true,
       },
       tags: "",
+      complete: false,
     });
   };
 
@@ -234,12 +235,6 @@ const DashboardReportIncident = () => {
           <button className="signin-button mt-4">Add Bug</button>
         </form>
       </div>
-      {openModal && (
-        <Modal setOpenModal={setOpenModal}>
-          <p className="font-bold">Bug added</p>
-          <p>New bug has been added.</p>
-        </Modal>
-      )}
     </div>
   );
 };

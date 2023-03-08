@@ -51,26 +51,26 @@ const ModalUserPassword = ({ setOpenModalUserPassword }) => {
               autoFocus
               id="password"
               type="password"
-              placeholder="Password"
+              placeholder="New password"
               minLength={6}
               className="input peer"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
             />
-            <label className="label">Password</label>
+            <label className="label">New password</label>
           </div>
           <div className="relative">
             <input
               required
               id="confirm-password"
               type="password"
-              placeholder="Confirm password"
+              placeholder="Confirm new password"
               minLength={6}
               className="input peer"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
             />
-            <label className="label">Confirm password</label>
+            <label className="label">Confirm new password</label>
           </div>
           {password !== confirmPassword && (
             <p className="text-white/50 text-sm">Passwords do not match</p>

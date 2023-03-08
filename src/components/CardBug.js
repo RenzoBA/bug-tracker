@@ -9,7 +9,11 @@ const CardBug = ({ bug }) => {
   return (
     <>
       <button
-        className="flex flex-col justify-between items-start gap-2 bg-[#203a43] p-3 text-left rounded-md shadow w-80 h-48"
+        className={`${
+          bug.complete
+            ? "opacity-30 shadow-none grayscale"
+            : "opacity-100 shadow grayscale-0"
+        } flex flex-col justify-between items-start gap-2 bg-[#203a43] p-3 text-left rounded-md w-80 h-48`}
         onClick={() => setOpenModalBug(true)}
       >
         <div>
