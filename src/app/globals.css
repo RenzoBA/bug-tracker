@@ -11,6 +11,10 @@
     @apply w-full p-2 text-white bg-transparent border-b-2 border-white/50 focus:outline-none focus:border-decoration overflow-y-hidden;
   }
 
+  .hover-button {
+    @apply text-white/50 hover:text-white;
+  }
+
   .link {
     @apply text-sm text-white/50 hover:text-white;
   }

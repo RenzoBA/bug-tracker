@@ -12,7 +12,7 @@ const CreateProject = () => {
   const router = useRouter();
   const [projectData, setProjectData] = useState({
     date: Date.now(),
-    owner: currentUser?.uid,
+    owner: currentUser.uid,
     name: "",
     description: "",
     requirements: "",
@@ -34,6 +34,7 @@ const CreateProject = () => {
       name: "",
       description: "",
       requirements: "",
+      team: [currentUser.uid],
     });
     router.push("/dashboard");
   };

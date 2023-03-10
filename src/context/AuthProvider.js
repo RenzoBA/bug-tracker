@@ -151,9 +151,8 @@ const AuthProvider = ({ children }) => {
         await updateProfile(auth.currentUser, {
           displayName: displayName,
         });
-        await setDoc(doc(db, `users/${currentUser.uid}`), {
+        await updateDoc(doc(db, `users/${currentUser.uid}`), {
           displayName: displayName,
-          email: currentUser.email,
         });
       }
       setModal({
@@ -221,6 +220,12 @@ const AuthProvider = ({ children }) => {
   const createProject = async (projectData) => {
     try {
       const docRef = await addDoc(collection(db, "projects"), projectData);
+
+      await setDoc(
+        doc(db, `projects/${docRef.id}/team/${currentUser.uid}`),
+        currentUser
+      );
+
       await setDoc(
         doc(db, `users/${currentUser.uid}/projects/${docRef.id}`),
         projectData
@@ -264,7 +269,6 @@ const AuthProvider = ({ children }) => {
 
   const completeBugReport = async (bid, complete) => {
     try {
-      console.log(`projects/${currentPid}/bugs/${bid}`);
       await updateDoc(doc(db, `projects/${currentPid}/bugs/${bid}`), {
         complete: !complete,
         updated: serverTimestamp(),
@@ -274,6 +278,19 @@ const AuthProvider = ({ children }) => {
         title: "Bug completed",
         description: "This bug was completed.",
       });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const updateBugReport = async (bid) => {};
+
+  const createBugComment = async (bid, comment) => {
+    try {
+      await addDoc(
+        collection(db, `projects/${currentPid}/bugs/${bid}/comment`),
+        comment
+      );
     } catch (error) {
       console.log(error.message);
     }
@@ -292,7 +309,25 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getBugReports = async (setBugReports) => {
+  const getBugComments = (bid, setBugComments) => {
+    try {
+      const qBugComments = query(
+        collection(db, `projects/${currentPid}/bugs/${bid}/comment`)
+      );
+      const unsubscribe = onSnapshot(qBugComments, (querySnapshot) => {
+        const comments = [];
+        querySnapshot.forEach((doc) => {
+          comments.push({ ...doc.data(), bcid: doc.id });
+        });
+        setBugComments(comments);
+      });
+      console.log("currentUser: ", currentUser);
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const getBugReports = (setBugReports) => {
     try {
       const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
       const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
@@ -308,8 +343,8 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getDuration = (start, end) => {
-    const seconds = (end - start) / 1000;
+  const getDuration = (start) => {
+    const seconds = (Date.now() - start) / 1000;
     return seconds < 60
       ? "0m ago"
       : seconds < 3600
@@ -341,8 +376,11 @@ const AuthProvider = ({ children }) => {
     joinProject,
     createBugReport,
     completeBugReport,
+    updateBugReport,
     deleteBugReport,
     getBugReports,
+    createBugComment,
+    getBugComments,
     getDuration,
   };
 

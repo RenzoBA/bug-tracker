@@ -10,7 +10,7 @@ export default function RootLayout({ children }) {
     <html lang="en">
       <head />
       <body
-        className={`text-white bg-gradient-to-b from-primary to-secondary ${comfortaa.className}`}
+        className={`text-white bg-gradient-to-b from-primary to-secondary bg-secondary bg-no-repeat ${comfortaa.className} scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10`}
       >
         <AuthProvider>
           <Header />

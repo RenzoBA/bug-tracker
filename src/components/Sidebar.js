@@ -14,7 +14,7 @@ const Sidebar = () => {
 
   if (currentUser) {
     return (
-      <div className="flex flex-col gap-5 justify-start items-center pt-20 backdrop-blur shadow fixed h-full w-[4.5rem] text-[0.6rem]">
+      <div className="flex flex-col gap-5 justify-start items-center pt-20 backdrop-blur shadow fixed h-full w-[4.5rem] text-[0.6rem] z-10">
         <Link
           className={`section ${
             categorySelected === "dashboard" && "text-decoration"

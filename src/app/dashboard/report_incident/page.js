@@ -20,7 +20,6 @@ const DashboardReportIncident = () => {
     responsable: responsableValue,
     tags: "",
     complete: false,
-    //add comments section?
   });
 
   const handleResponsable = (e) => {
@@ -94,6 +93,7 @@ const DashboardReportIncident = () => {
           <div className="relative">
             <input
               required
+              autoFocus
               id="title"
               name="title"
               type="text"
