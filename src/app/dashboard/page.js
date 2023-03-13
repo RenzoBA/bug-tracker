@@ -16,7 +16,7 @@ const Dashboard = () => {
 
   if (currentUser) {
     return (
-      <div className="flex flex-wrap gap-3 items-center justify-center h-full w-full py-16 pl-[4.5rem]">
+      <div className="flex flex-wrap gap-3 items-center justify-center min-h-screen w-full py-16 pl-[4.5rem]">
         {bugReports.map((bug) => (
           <CardBug bug={bug} key={bug.bid} />
         ))}

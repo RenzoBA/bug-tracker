@@ -8,19 +8,13 @@ import { useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 
 const PasswordReset = () => {
-  const { currentUser, resetUserPassword } = useAuth();
+  const { currentUser, resetUserPassword, modal, setModal } = useAuth();
   const [email, setEmail] = useState("");
-  const [openModalPasswordReset, setOpenModalPasswordReset] = useState(false);
-  const [openModalUserNotFound, setOpenModalUserNotFound] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    resetUserPassword(
-      email,
-      setOpenModalPasswordReset,
-      setOpenModalUserNotFound
-    );
+    resetUserPassword(email);
     setEmail("");
   };
   if (!currentUser) {
@@ -60,18 +54,7 @@ const PasswordReset = () => {
             </Link>
           </div>
         </div>
-        {openModalPasswordReset && (
-          <Modal setOpenModal={setOpenModalPasswordReset}>
-            <p className="font-bold">Password reset successful</p>
-            <p>Please check your email inbox.</p>
-          </Modal>
-        )}
-        {openModalUserNotFound && (
-          <Modal setOpenModal={setOpenModalUserNotFound}>
-            <p className="font-bold">User not found</p>
-            <p>Please enter a correct email.</p>
-          </Modal>
-        )}
+        {modal.open && <Modal modal={modal} setModal={setModal} />}
       </div>
     );
   }

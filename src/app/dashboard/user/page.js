@@ -32,7 +32,7 @@ const DashboardUser = () => {
           <div className="flex flex-col items-start">
             <div className="flex flex-row gap-3 items-center">
               <h2 className="text-6xl uppercase font-semibold">
-                {currentUser.displayName ? currentUser.displayName : "no-name"}
+                {currentUser.displayName}
               </h2>
               <button
                 onClick={() => setOpenModalUserInfo(true)}

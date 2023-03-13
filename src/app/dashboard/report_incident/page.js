@@ -1,15 +1,14 @@
 "use client";
 
-import Modal from "@/components/Modal";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiUser3Fill } from "react-icons/ri";
 
 const DashboardReportIncident = () => {
-  const { currentUser, createBugReport } = useAuth();
-  const [responsableValue, setResponsableValue] = useState([]);
-  console.log(responsableValue);
+  const { currentUser, createBugReport, getUserInfo, getTeamMembers } =
+    useAuth();
+  const [teamMembers, setTeamMembers] = useState([]);
   const [bugData, setBugData] = useState({
     date: Date.now(),
     owner: currentUser.uid,
@@ -17,31 +16,53 @@ const DashboardReportIncident = () => {
     resume: "",
     description: "",
     priority: "",
-    responsable: responsableValue,
     tags: "",
+    team: [],
     complete: false,
   });
 
-  const handleResponsable = (e) => {
-    if (e.target.checked) {
-      setResponsableValue([...responsableValue, e.target.value]);
+  useEffect(() => {
+    const getData = async () => {
+      const arr = await getTeamMembers();
+
+      let team = [];
+
+      for (let i = 0; i < arr.length; i++) {
+        team.push({ ...(await getUserInfo(arr[i])), uid: arr[i] });
+      }
+      setTeamMembers(team);
+    };
+
+    getData();
+  }, []);
+
+  const handleChange = (e) => {
+    if (e.target.id === "member") {
+      let currentTeam = bugData.team;
+      if (e.target.checked) {
+        setBugData({
+          ...bugData,
+          team: [...currentTeam, e.target.value],
+        });
+      } else {
+        setBugData({
+          ...bugData,
+          team: currentTeam.filter((item) => item !== e.target.value),
+        });
+      }
     } else {
-      setResponsableValue(
-        responsableValue.filter((item) => item !== e.target.value)
-      );
+      setBugData({
+        ...bugData,
+        [e.target.id]: e.target.value,
+      });
     }
   };
 
-  const handleChange = (e) => {
-    setBugData({
-      ...bugData,
-      [e.target.id]: e.target.value,
-    });
-  };
-  console.log(bugData.responsable);
+  console.log("bug data", bugData);
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log("submit", bugData);
     createBugReport(bugData);
     setBugData({
       date: Date.now(),
@@ -50,10 +71,8 @@ const DashboardReportIncident = () => {
       resume: "",
       description: "",
       priority: "",
-      responsable: {
-        team: true,
-      },
       tags: "",
+      team: [],
       complete: false,
     });
   };
@@ -169,49 +188,33 @@ const DashboardReportIncident = () => {
             <label className="label-2" htmlFor="responsable">
               Responsable
             </label>
-            <div id="responsable">
-              <input
-                type="checkbox"
-                id="team"
-                value="team"
-                defaultChecked
-                onChange={handleResponsable}
-              />
-              <label htmlFor="team">All Team</label>
-              <input
-                type="checkbox"
-                id="user1"
-                value="uid1"
-                onChange={handleResponsable}
-              />
-              <label htmlFor="user1">User 1</label>
-              <input
-                type="checkbox"
-                id="user2"
-                value="uid2"
-                onChange={handleResponsable}
-              />
-              <label htmlFor="user2">User 2</label>
-              <input
-                type="checkbox"
-                id="user3"
-                value="uid3"
-                onChange={handleResponsable}
-              />
-              <label htmlFor="user3">User 3</label>
+            <div id="responsable" className="flex flex-col gap-2 mt-2">
+              {teamMembers.map((member) => (
+                <label key={member.uid} className="input-container">
+                  <>
+                    {!member.photoURL ? (
+                      <RiUser3Fill className="text-decoration" />
+                    ) : (
+                      <Image
+                        src={member.photoURL}
+                        width={50}
+                        height={50}
+                        alt="user-photo"
+                        className="user-photo w-10 h-10"
+                      />
+                    )}
+                    <span>{member.displayName}</span>
+                  </>
+                  <input
+                    type="checkbox"
+                    id="member"
+                    value={member.uid}
+                    onChange={handleChange}
+                  />
+                  <div className="checkmark" />
+                </label>
+              ))}
             </div>
-            {/* <select
-              multiple
-              id="responsable"
-              name="responsable"
-              className="input-2"
-              value={bugData.responsable}
-              onChange={handleChange}
-            >
-              <option value="user1">user1</option>
-              <option value="user2">user2</option>
-              <option value="user3">user3</option>
-            </select> */}
           </div>
           <div className="relative">
             <input

@@ -8,14 +8,13 @@ import { useRouter } from "next/navigation";
 import Modal from "@/components/Modal";
 
 const Signup = () => {
-  const { currentUser, sendSignInLink } = useAuth();
+  const { currentUser, sendSignInLink, modal, setModal } = useAuth();
   const [email, setEmail] = useState("");
-  const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    sendSignInLink("http://localhost:3000/update_user", email, setOpenModal);
+    sendSignInLink("http://localhost:3000/update_user", email);
     setEmail("");
   };
 
@@ -53,12 +52,7 @@ const Signup = () => {
             </Link>
           </div>
         </div>
-        {openModal && (
-          <Modal setOpenModal={setOpenModal}>
-            <p className="font-bold">Sign up successful</p>
-            <p>Please check your email inbox.</p>
-          </Modal>
-        )}
+        {modal.open && <Modal modal={modal} setModal={setModal} />}
       </div>
     );
   }

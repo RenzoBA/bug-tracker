@@ -39,6 +39,8 @@ const CreateProject = () => {
     router.push("/dashboard");
   };
 
+  console.log("currentUser: ", currentUser);
+
   if (currentUser) {
     return (
       <div className="flex items-center justify-center min-h-screen">

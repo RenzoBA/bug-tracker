@@ -23,8 +23,8 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
   const handlePhoto = (e) => {
     setPhotoFile(e.target.files[0]);
     setPhotoPreview(URL.createObjectURL(e.target.files[0]));
-    console.log("photoFile (modalUserInfo): ", photoFile);
   };
+  console.log("photoFile (modalUserInfo): ", typeof photoFile);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -86,6 +86,8 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
           <div className="relative">
             <input
               autoFocus
+              required
+              minLength={3}
               id="display-name"
               type="text"
               placeholder="Display name"

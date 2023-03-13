@@ -26,6 +26,7 @@ import {
   deleteDoc,
   updateDoc,
   serverTimestamp,
+  arrayUnion,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -52,6 +53,7 @@ const AuthProvider = ({ children }) => {
       try {
         if (user) {
           const { uid, displayName, email, photoURL } = user;
+
           let pids = [];
           const querySnapshot = await getDocs(
             collection(db, `users/${uid}/projects`)
@@ -59,11 +61,13 @@ const AuthProvider = ({ children }) => {
           querySnapshot.forEach((doc) => {
             pids.push(doc.id);
           });
+
           if (pids.length !== 0) {
             setCurrentPid(pids[0]);
           }
+
           setCurrentUser({ uid, displayName, email, photoURL, pids });
-          // console.log("currentUser (useEffect): ", currentUser);
+          console.log("currentUser (useEffect): ", currentUser);
         } else {
           setCurrentUser(null);
         }
@@ -76,14 +80,18 @@ const AuthProvider = ({ children }) => {
     return () => unsubscriber();
   }, []);
 
-  const signIn = async (email, password, setOpenModal) => {
+  const signIn = async (email, password) => {
     try {
-      setOpenModal(false);
       const userCredential = await signInWithEmailAndPassword(
         auth,
         email,
         password
       );
+      setModal({
+        open: true,
+        title: "Great!",
+        description: "You login successfully.",
+      });
       let pids = [];
       const querySnapshot = await getDocs(
         collection(db, `users/${userCredential.user.uid}/projects`)
@@ -98,12 +106,16 @@ const AuthProvider = ({ children }) => {
         router.push("/create_project");
       }
     } catch (error) {
-      setOpenModal(true);
+      setModal({
+        open: true,
+        title: "Login Failed",
+        description: "Incorrect email or password.",
+      });
       console.log(error.message);
     }
   };
 
-  const sendSignInLink = async (url, email, setOpenModal) => {
+  const sendSignInLink = async (url, email) => {
     const actionCodeSettings = {
       url: url,
       handleCodeInApp: true,
@@ -111,7 +123,11 @@ const AuthProvider = ({ children }) => {
     try {
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
-      setOpenModal(true);
+      setModal({
+        open: true,
+        title: "Sign up successful",
+        description: "Please check your email inbox.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -132,11 +148,21 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const updateUserInfo = async (displayName, file) => {
+  const asignUserInfo = async (displayName, photoFile, password) => {
     try {
-      if (file !== "") {
-        const fileRef = ref(storage, `users/${auth.currentUser.uid}`);
-        const snapshot = await uploadBytes(fileRef, file);
+      if (photoFile === "") {
+        await updateProfile(auth.currentUser, {
+          displayName: displayName,
+        });
+        await setDoc(doc(db, `users/${currentUser.uid}`), {
+          displayName: displayName,
+          photoURL: "",
+          email: currentUser.email,
+        });
+        setCurrentUser({ ...currentUser, displayName: displayName });
+      } else {
+        const fileRef = ref(storage, `users/${currentUser.uid}`);
+        const snapshot = await uploadBytes(fileRef, photoFile);
         const photoURL = await getDownloadURL(fileRef);
         await updateProfile(auth.currentUser, {
           displayName: displayName,
@@ -147,12 +173,45 @@ const AuthProvider = ({ children }) => {
           photoURL: photoURL,
           email: currentUser.email,
         });
-      } else {
+        setCurrentUser({
+          ...currentUser,
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+      }
+      await updateUserPassword(password);
+    } catch (error) {
+      console.log(error.message);
+    }
+    router.push("/create_project");
+  };
+
+  const updateUserInfo = async (displayName, photoFile) => {
+    try {
+      if (photoFile === "") {
         await updateProfile(auth.currentUser, {
           displayName: displayName,
         });
         await updateDoc(doc(db, `users/${currentUser.uid}`), {
           displayName: displayName,
+        });
+        setCurrentUser({ ...currentUser, displayName: displayName });
+      } else {
+        const fileRef = ref(storage, `users/${currentUser.uid}`);
+        const snapshot = await uploadBytes(fileRef, photoFile);
+        const photoURL = await getDownloadURL(fileRef);
+        await updateProfile(auth.currentUser, {
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+        await updateDoc(doc(db, `users/${currentUser.uid}`), {
+          displayName: displayName,
+          photoURL: photoURL,
+        });
+        setCurrentUser({
+          ...currentUser,
+          displayName: displayName,
+          photoURL: photoURL,
         });
       }
       setModal({
@@ -178,18 +237,20 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const resetUserPassword = async (
-    email,
-    setOpenModalPasswordReset,
-    setOpenModalUserNotFound
-  ) => {
+  const resetUserPassword = async (email) => {
     try {
-      setOpenModalUserNotFound(false);
       await sendPasswordResetEmail(auth, email);
-      setOpenModalPasswordReset(true);
+      setModal({
+        open: true,
+        title: "Password reset successful",
+        description: "Please check your email inbox.",
+      });
     } catch (error) {
-      setOpenModalPasswordReset(false);
-      setOpenModalUserNotFound(true);
+      setModal({
+        open: true,
+        title: "User not found",
+        description: "Please enter a correct email.",
+      });
       console.log(error.message);
     }
   };
@@ -208,6 +269,11 @@ const AuthProvider = ({ children }) => {
     return userInfo.data();
   };
 
+  const getTeamMembers = async () => {
+    const teamInfo = await getDoc(doc(db, `projects/${currentPid}`));
+    return teamInfo.data().team;
+  };
+
   const removeUser = async () => {
     try {
       await deleteUser(auth.currentUser);
@@ -219,12 +285,10 @@ const AuthProvider = ({ children }) => {
 
   const createProject = async (projectData) => {
     try {
-      const docRef = await addDoc(collection(db, "projects"), projectData);
-
-      await setDoc(
-        doc(db, `projects/${docRef.id}/team/${currentUser.uid}`),
-        currentUser
-      );
+      const docRef = await addDoc(collection(db, "projects"), {
+        ...projectData,
+        team: [currentUser.uid],
+      });
 
       await setDoc(
         doc(db, `users/${currentUser.uid}/projects/${docRef.id}`),
@@ -238,13 +302,25 @@ const AuthProvider = ({ children }) => {
 
   const joinProject = async (pid) => {
     try {
+      await updateDoc(doc(db, `projects/${pid}`), {
+        team: arrayUnion(currentUser.uid),
+      });
+
       const projectData = await getDoc(doc(db, `projects/${pid}`));
+      const { date, description, name, owner, requirements } =
+        projectData.data();
+
       console.log("projectData (join Project): ", projectData.data());
-      await setDoc(
-        doc(db, `users/${currentUser.uid}/projects/${pid}`),
-        projectData.data()
-      );
+
+      await setDoc(doc(db, `users/${currentUser.uid}/projects/${pid}`), {
+        date,
+        description,
+        name,
+        owner,
+        requirements,
+      });
       setCurrentPid(pid);
+      console.log("join currentPid", currentPid);
     } catch (error) {
       console.log(error.message);
     }
@@ -329,6 +405,7 @@ const AuthProvider = ({ children }) => {
 
   const getBugReports = (setBugReports) => {
     try {
+      console.log("currentPid", currentPid);
       const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
       const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
         const bugs = [];
@@ -366,11 +443,13 @@ const AuthProvider = ({ children }) => {
     signIn,
     sendSignInLink,
     signInLink,
+    asignUserInfo,
     updateUserInfo,
     updateUserPassword,
     resetUserPassword,
     logOut,
     getUserInfo,
+    getTeamMembers,
     removeUser,
     createProject,
     joinProject,

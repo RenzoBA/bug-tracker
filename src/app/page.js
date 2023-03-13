@@ -8,15 +8,16 @@ import { useAuth } from "@/context/AuthProvider";
 import Modal from "@/components/Modal";
 
 const Home = () => {
-  const { currentUser, signIn } = useAuth();
+  const { currentUser, signIn, modal, setModal } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [openModal, setOpenModal] = useState(false);
   const router = useRouter();
+
+  console.log("currentUser: ", currentUser);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    signIn(email, password, setOpenModal);
+    signIn(email, password);
     setEmail("");
     setPassword("");
   };
@@ -71,12 +72,7 @@ const Home = () => {
             </Link>
           </div>
         </div>
-        {openModal && (
-          <Modal setOpenModal={setOpenModal}>
-            <p className="font-bold">Login Failed</p>
-            <p>Incorrect email or password.</p>
-          </Modal>
-        )}
+        {modal.open && <Modal modal={modal} setModal={setModal} />}
       </div>
     );
   }

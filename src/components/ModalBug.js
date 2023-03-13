@@ -4,7 +4,7 @@ import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import { RiCloseFill, RiSendPlane2Fill } from "react-icons/ri";
+import { RiCloseFill, RiSendPlane2Fill, RiUser3Fill } from "react-icons/ri";
 import BugComment from "./BugComment";
 
 const ModalBug = ({ setOpenModalBug, bug }) => {
@@ -18,6 +18,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     getBugComments,
   } = useAuth();
   const [userInfo, setUserInfo] = useState([]);
+  const [responsable, setResponsable] = useState([]);
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({
     user: currentUser.uid,
@@ -25,10 +26,18 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     description: "",
   });
 
+  console.log(bug);
   useEffect(() => {
     const getData = async () => {
       const data = await getUserInfo(bug.owner);
       setUserInfo(data);
+
+      let team = [];
+
+      for (let i = 0; i < bug.team.length; i++) {
+        team.push({ ...(await getUserInfo(bug.team[i])), uid: bug.team[i] });
+      }
+      setResponsable(team);
     };
     getData();
   }, []);
@@ -36,8 +45,6 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
   useEffect(() => {
     getBugComments(bug.bid, setComments);
   }, []);
-
-  console.log(comments);
 
   const handleKeyDown = (e) => {
     e.key === "Escape" && setOpenModalBug(false);
@@ -99,21 +106,49 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
           <hr className="border-white/5" />
           <div className="flex flex-col gap-5">
             <div>
-              <label htmlFor="resume" className="text-white/50 text-sm">
+              <label htmlFor="owner" className="text-white/50 text-sm">
                 owner:
               </label>
-              <div className="flex gap-2">
+              <div className="flex gap-2 mt-1" id="owner">
                 <Image
                   src={userInfo.photoURL}
                   width={50}
                   height={50}
                   alt="user-photo"
-                  className="user-photo mt-1"
+                  className="user-photo"
                 />
                 <div className="flex flex-col justify-between">
                   <p className="text-lg">{userInfo.displayName}</p>
                   <p className="text-white/50">{userInfo.email}</p>
                 </div>
+              </div>
+            </div>
+            <div>
+              <label htmlFor="responsable" className="text-white/50 text-sm">
+                responsable:
+              </label>
+              <div id="responsable" className="mt-1 flex flex-wrap gap-4">
+                {responsable.map((member) => (
+                  <div
+                    key={member.uid}
+                    className="flex flex-row items-center gap-2"
+                  >
+                    {!member.photoURL ? (
+                      <RiUser3Fill className="text-decoration" />
+                    ) : (
+                      <Image
+                        src={member.photoURL}
+                        width={50}
+                        height={50}
+                        alt="user-photo"
+                        className="user-photo w-12 h-12"
+                      />
+                    )}
+                    <span>{`${member.displayName} ${
+                      currentUser.uid === member.uid ? "(you)" : ""
+                    }`}</span>
+                  </div>
+                ))}
               </div>
             </div>
             <div>
@@ -135,6 +170,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <p id="date">{new Date(bug.date).toUTCString()}</p>
             </div>
           </div>
+
           <hr className="border-white/5" />
           <div className="flex justify-around">
             <button className="hover-button">update</button>
