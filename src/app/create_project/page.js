@@ -4,19 +4,23 @@ import { useAuth } from "@/context/AuthProvider";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { useState } from "react";
-import { RiUser3Fill } from "react-icons/ri";
+import { RiLogoutBoxRLine, RiUser3Fill } from "react-icons/ri";
 import Link from "next/link";
 
 const CreateProject = () => {
-  const { currentUser, createProject } = useAuth();
+  const { currentUser, createProject, setOpenPidContainer, logOut } = useAuth();
   const router = useRouter();
   const [projectData, setProjectData] = useState({
     date: Date.now(),
-    owner: currentUser.uid,
+    owner: currentUser?.uid,
     name: "",
     description: "",
     requirements: "",
   });
+
+  const handleBackdropClick = () => {
+    setOpenPidContainer(false);
+  };
 
   const handleChange = (e) => {
     setProjectData({
@@ -43,8 +47,11 @@ const CreateProject = () => {
 
   if (currentUser) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
+      <div
+        className="flex items-center justify-center min-h-screen py-16"
+        onClick={handleBackdropClick}
+      >
+        <div className="flex flex-col gap-3 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
           <h2 className="text-3xl sm:text-5xl py-2 lowercase text-decoration flex gap-1">
             Create Project
           </h2>
@@ -125,9 +132,17 @@ const CreateProject = () => {
 
             <button className="signin-button mt-4">Create Project</button>
           </form>
-          <Link href={"/join_project"} className="link">
-            Join project
-          </Link>
+          <div className="w-full flex flex-row justify-between">
+            <Link href="/join_project" className="link">
+              Join project
+            </Link>
+            <button
+              className="link flex flex-row gap-1 items-center"
+              onClick={logOut}
+            >
+              <RiLogoutBoxRLine className="text-xl" /> log out
+            </button>
+          </div>
         </div>
       </div>
     );

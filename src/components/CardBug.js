@@ -53,9 +53,10 @@ const CardBug = ({ bug }) => {
             </div>
           </div>
           <div className="flex flex-row relative">
-            {responsable.map((member, i) => (
+            {responsable.map((member) => (
               <Image
                 src={member.photoURL}
+                key={member.uid}
                 width={50}
                 height={50}
                 alt="user-photo"

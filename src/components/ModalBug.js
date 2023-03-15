@@ -80,7 +80,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
       onKeyDown={handleKeyDown}
       onClick={handleBackdropClick}
     >
-      <div className="flex flex-col gap-5 p-10 bg-[#203a43] mx-5 rounded-md w-full md:w-3/4 lg:w-2/3 xl:1/2">
+      <div className="flex flex-col gap-5 p-10 bg-[#203a43] mx-5 rounded-md w-full md:w-3/4 lg:w-2/3 xl:w-1/2">
         <div className="flex flex-row justify-between items-center w-full hover-button text-xl">
           <label className="text-decoration">Bug Details</label>
           <button onClick={() => setOpenModalBug(false)}>
@@ -90,7 +90,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
         <div className="flex flex-col gap-4 mt-4">
           <div>
             <p className="font-light text-white/50">
-              {"#" + bug.tags.replaceAll(/[^A-Za-z0-9_']+/g, " #")}
+              {"#" + bug.tags.replaceAll(/[^A-Za-z0-9_\-']+/g, " #")}
             </p>
             <h2 className="text-3xl">{bug.title}</h2>
             <div>

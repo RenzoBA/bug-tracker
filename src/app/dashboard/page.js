@@ -2,33 +2,28 @@
 
 import CardBug from "@/components/CardBug";
 import { useAuth } from "@/context/AuthProvider";
-import { useRouter } from "next/navigation";
+import { collection, onSnapshot, query } from "firebase/firestore";
+import { db } from "firebaseConfig";
 import { useEffect, useState } from "react";
 
 const Dashboard = () => {
-  const { currentUser, logOut, getBugReports } = useAuth();
+  const { currentPid, logOut, getBugReports } = useAuth();
   const [bugReports, setBugReports] = useState([]);
-  const router = useRouter();
 
   useEffect(() => {
     getBugReports(setBugReports);
-  }, []);
+  }, [currentPid]);
 
-  if (currentUser) {
-    return (
-      <div className="flex flex-wrap gap-3 items-center justify-center min-h-screen w-full py-16 pl-[4.5rem]">
-        {bugReports.map((bug) => (
-          <CardBug bug={bug} key={bug.bid} />
-        ))}
-        <button className="p-2 border" onClick={logOut}>
-          log Out
-        </button>
-      </div>
-    );
-  }
-  if (!currentUser) {
-    router.push("/");
-  }
+  return (
+    <div className="flex flex-wrap gap-3 items-center justify-center min-h-screen w-full py-16 pl-[4.5rem]">
+      {bugReports.map((bug) => (
+        <CardBug bug={bug} key={bug.bid} />
+      ))}
+      <button className="p-2 border" onClick={logOut}>
+        log Out
+      </button>
+    </div>
+  );
 };
 
 export default Dashboard;

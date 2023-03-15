@@ -8,12 +8,10 @@ import { useAuth } from "@/context/AuthProvider";
 import Modal from "@/components/Modal";
 
 const Home = () => {
-  const { currentUser, signIn, modal, setModal } = useAuth();
+  const { currentUser, currentPid, signIn, modal, setModal } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
-
-  console.log("currentUser: ", currentUser);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -75,10 +73,11 @@ const Home = () => {
         {modal.open && <Modal modal={modal} setModal={setModal} />}
       </div>
     );
+  } else if (currentUser && !currentPid) {
+    router.push("/create_project");
+  } else if (currentUser && currentPid) {
+    router.push("/dashboard");
   }
-  // if (currentUser) {
-  //   router.push("/dashboard");
-  // }
 };
 
 export default Home;

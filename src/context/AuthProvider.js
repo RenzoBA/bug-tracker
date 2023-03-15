@@ -44,6 +44,7 @@ const AuthProvider = ({ children }) => {
     title: "",
     description: "",
   });
+  const [openPidContainer, setOpenPidContainer] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -100,8 +101,8 @@ const AuthProvider = ({ children }) => {
         pids.push(doc.id);
       });
       if (pids.length !== 0) {
-        setCurrentPid(pids[0]);
         router.push("/dashboard");
+        setCurrentPid(pids[0]);
       } else {
         router.push("/create_project");
       }
@@ -265,8 +266,21 @@ const AuthProvider = ({ children }) => {
   };
 
   const getUserInfo = async (uid) => {
-    const userInfo = await getDoc(doc(db, `users/${uid}`));
-    return userInfo.data();
+    try {
+      const userInfo = await getDoc(doc(db, `users/${uid}`));
+      return userInfo.data();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const getProjectInfo = async (pid) => {
+    try {
+      const projectInfo = await getDoc(doc(db, `projects/${pid}`));
+      return projectInfo.data();
+    } catch (error) {
+      console.log(error.message);
+    }
   };
 
   const getTeamMembers = async () => {
@@ -321,6 +335,7 @@ const AuthProvider = ({ children }) => {
       });
       setCurrentPid(pid);
       console.log("join currentPid", currentPid);
+      router.push("/dashboard");
     } catch (error) {
       console.log(error.message);
     }
@@ -414,7 +429,7 @@ const AuthProvider = ({ children }) => {
         });
         setBugReports(bugs);
       });
-      console.log("currentUser: ", currentUser);
+      return () => unsubscribe();
     } catch (error) {
       console.log(error.message);
     }
@@ -435,8 +450,12 @@ const AuthProvider = ({ children }) => {
 
   const value = {
     currentUser,
+    currentPid,
+    setCurrentPid,
     modal,
     setModal,
+    openPidContainer,
+    setOpenPidContainer,
     categorySelected,
     setCategorySelected,
     loading,
@@ -449,6 +468,7 @@ const AuthProvider = ({ children }) => {
     resetUserPassword,
     logOut,
     getUserInfo,
+    getProjectInfo,
     getTeamMembers,
     removeUser,
     createProject,
