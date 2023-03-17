@@ -103,7 +103,7 @@ const DashboardReportIncident = () => {
               <p
                 id="owner"
                 name="owner"
-                className="text-base sm:text-lg uppercase px-2 select-none"
+                className="text-base sm:text-lg px-2 select-none"
               >
                 {currentUser.displayName}
               </p>
@@ -203,7 +203,9 @@ const DashboardReportIncident = () => {
                         className="user-photo w-10 h-10"
                       />
                     )}
-                    <span>{member.displayName}</span>
+                    <span>{`${member.displayName} ${
+                      currentUser.uid === member.uid ? "(you)" : ""
+                    }`}</span>
                   </>
                   <input
                     type="checkbox"

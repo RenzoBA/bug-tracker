@@ -25,18 +25,20 @@ const Header = () => {
   const [currentProject, setCurrentProject] = useState("");
 
   useEffect(() => {
-    if (currentUser) {
+    if (currentUser && currentPid) {
       const getData = async () => {
         const { name } = await getProjectInfo(currentPid);
+        console.log("name", name);
         setCurrentProject(name);
       };
       getData();
     }
-  }, []);
+  }, [currentUser, currentPid]);
   console.log("header");
 
   useEffect(() => {
     if (currentUser) {
+      console.log("useeffect 2", currentPid);
       const getData = async () => {
         let projects = [];
         for (let i = 0; i < currentUser.pids.length; i++) {
@@ -51,16 +53,17 @@ const Header = () => {
       };
       getData();
     }
-  }, []);
+  }, [currentUser]);
 
   const handleBackdropClick = (e) => {
     e.target === e.currentTarget && setOpenPidContainer(false);
   };
 
   const handleCurrentProject = async (project) => {
-    setCurrentPid(project.pid);
     setCurrentProject(project.name);
     setOpenPidContainer(false);
+    setCurrentPid(project.pid);
+    setCategorySelected("dashboard");
   };
 
   return (

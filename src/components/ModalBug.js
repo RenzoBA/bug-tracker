@@ -110,13 +110,17 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
                 owner:
               </label>
               <div className="flex gap-2 mt-1" id="owner">
-                <Image
-                  src={userInfo.photoURL}
-                  width={50}
-                  height={50}
-                  alt="user-photo"
-                  className="user-photo"
-                />
+                {!userInfo.photoURL ? (
+                  <RiUser3Fill className="text-decoration" />
+                ) : (
+                  <Image
+                    src={userInfo.photoURL}
+                    width={50}
+                    height={50}
+                    alt="user-photo"
+                    className="user-photo"
+                  />
+                )}
                 <div className="flex flex-col justify-between">
                   <p className="text-lg">{userInfo.displayName}</p>
                   <p className="text-white/50">{userInfo.email}</p>
@@ -181,7 +185,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               {bug.complete ? "incomplete" : "complete"}
             </button>
             <button
-              onClick={() => deleteBugReport(bug.bid)}
+              onClick={() => deleteBugReport(bug)}
               className="text-red-500/50 hover:text-red-500"
             >
               delete

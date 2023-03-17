@@ -37,13 +37,13 @@ const Sidebar = () => {
         </Link>
         <Link
           className={`section ${
-            categorySelected === "team" && "text-decoration"
+            categorySelected === "project" && "text-decoration"
           }`}
-          href="/dashboard/team"
-          onClick={() => setCategorySelected("team")}
+          href="/dashboard/project"
+          onClick={() => setCategorySelected("project")}
         >
           <RiTeamFill className="text-2xl" />
-          <label>Team</label>
+          <label>Project</label>
         </Link>
         <Link
           className={`section ${

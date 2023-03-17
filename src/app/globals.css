@@ -43,6 +43,10 @@
     @apply text-xs px-2 text-white;
   }
 
+  .title {
+    @apply text-sm text-white/50;
+  }
+
   .section {
     @apply flex flex-col items-center hover:text-decoration transition-colors;
   }

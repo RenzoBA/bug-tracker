@@ -283,6 +283,23 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const getBugsResume = async (setBugResume) => {
+    try {
+      const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
+      const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
+        const bugs = [];
+        querySnapshot.forEach((doc) => {
+          const { complete } = doc.data();
+          bugs.push({ complete, bid: doc.id });
+        });
+        setBugResume(bugs);
+      });
+      return () => unsubscribe();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const getTeamMembers = async () => {
     const teamInfo = await getDoc(doc(db, `projects/${currentPid}`));
     return teamInfo.data().team;
@@ -316,6 +333,7 @@ const AuthProvider = ({ children }) => {
 
   const joinProject = async (pid) => {
     try {
+      setCurrentPid(pid);
       await updateDoc(doc(db, `projects/${pid}`), {
         team: arrayUnion(currentUser.uid),
       });
@@ -333,7 +351,6 @@ const AuthProvider = ({ children }) => {
         owner,
         requirements,
       });
-      setCurrentPid(pid);
       console.log("join currentPid", currentPid);
       router.push("/dashboard");
     } catch (error) {
@@ -387,14 +404,23 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const deleteBugReport = async (bid) => {
+  const deleteBugReport = async (bug) => {
     try {
-      await deleteDoc(doc(db, `projects/${currentPid}/bugs`, bid));
-      setModal({
-        open: true,
-        title: "Bug deleted",
-        description: "This bug was deleted.",
-      });
+      console.log(bug);
+      if (bug.owner === currentUser.uid) {
+        await deleteDoc(doc(db, `projects/${currentPid}/bugs`, bug.bid));
+        setModal({
+          open: true,
+          title: "Bug deleted",
+          description: "This bug was deleted.",
+        });
+      } else {
+        setModal({
+          open: true,
+          title: "Cannot be deleted",
+          description: "Only the owner can delete it.",
+        });
+      }
     } catch (error) {
       console.log(error.message);
     }
@@ -435,6 +461,19 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  // const copyPid = () => {
+  //   try {
+  //     //copy currentPid
+  //     setModal({
+  //       open: true,
+  //       title: "PID copied",
+  //       description: "Project ID was copied correctly.",
+  //     });
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
+
   const getDuration = (start) => {
     const seconds = (Date.now() - start) / 1000;
     return seconds < 60
@@ -469,6 +508,7 @@ const AuthProvider = ({ children }) => {
     logOut,
     getUserInfo,
     getProjectInfo,
+    getBugsResume,
     getTeamMembers,
     removeUser,
     createProject,

@@ -1,22 +1,44 @@
 "use client";
 
+import CardProject from "@/components/CardProject";
 import ModalUserInfo from "@/components/ModalUserInfo";
 import ModalUserPassword from "@/components/ModalUserPassword";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { RiPencilFill, RiUser3Fill } from "react-icons/ri";
 
 const DashboardUser = () => {
-  const { currentUser, removeUser } = useAuth();
+  const { currentUser, removeUser, getProjectInfo } = useAuth();
   const [openModalUserInfo, setOpenModalUserInfo] = useState(false);
   const [openModalUserPassword, setOpenModalUserPassword] = useState(false);
+  const [projectsInfo, setProjectsInfo] = useState([]);
   const router = useRouter();
+
+  useEffect(() => {
+    if (currentUser) {
+      const getData = async () => {
+        let projects = [];
+        for (let i = 0; i < currentUser.pids.length; i++) {
+          const projectInfo = await getProjectInfo(currentUser.pids[i]);
+          projects.push({
+            ...projectInfo,
+            pid: currentUser.pids[i],
+          });
+        }
+        setProjectsInfo(projects);
+      };
+      getData();
+    }
+  }, []);
+
+  console.log(projectsInfo);
 
   if (currentUser) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
+      <div className="flex flex-col gap-10 items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
         <div className="flex gap-5">
           {!currentUser.photoURL ? (
             <RiUser3Fill className="text-decoration text-6xl" />
@@ -31,7 +53,7 @@ const DashboardUser = () => {
           )}
           <div className="flex flex-col items-start">
             <div className="flex flex-row gap-3 items-center">
-              <h2 className="text-6xl uppercase font-semibold">
+              <h2 className="text-6xl font-semibold">
                 {currentUser.displayName}
               </h2>
               <button
@@ -66,6 +88,14 @@ const DashboardUser = () => {
                 Delete Account
               </button>
             </div>
+          </div>
+        </div>
+        <div className="flex flex-col gap-4">
+          <p className="text-xl">Your projects: </p>
+          <div className="flex gap-4">
+            {projectsInfo.map((project) => (
+              <CardProject project={project} />
+            ))}
           </div>
         </div>
       </div>
