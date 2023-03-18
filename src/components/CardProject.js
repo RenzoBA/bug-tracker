@@ -2,7 +2,7 @@ import { useAuth } from "@/context/AuthProvider";
 import Link from "next/link";
 
 const CardProject = ({ project }) => {
-  const { setCurrentPid, setCategorySelected } = useAuth();
+  const { currentPid, setCurrentPid, setCategorySelected } = useAuth();
 
   const handleClick = () => {
     setCurrentPid(project.pid);
@@ -18,7 +18,13 @@ const CardProject = ({ project }) => {
         <label htmlFor="project" className="text-white/50 text-sm">
           project:
         </label>
-        <p className="text-2xl">{project.name}</p>
+        <p
+          className={`${
+            currentPid === project.pid && "text-decoration"
+          } text-2xl`}
+        >
+          {project.name}
+        </p>
         <p>{`${project.pid.slice(0, 5)}.....${project.pid.slice(-5)}`}</p>
       </div>
       <div>

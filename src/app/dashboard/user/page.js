@@ -3,18 +3,18 @@
 import CardProject from "@/components/CardProject";
 import ModalUserInfo from "@/components/ModalUserInfo";
 import ModalUserPassword from "@/components/ModalUserPassword";
+import ProjectSkeleton from "@/components/ProjectSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiPencilFill, RiUser3Fill } from "react-icons/ri";
 
 const DashboardUser = () => {
-  const { currentUser, removeUser, getProjectInfo } = useAuth();
+  const { currentUser, removeUser, getProjectInfo, logOut } = useAuth();
   const [openModalUserInfo, setOpenModalUserInfo] = useState(false);
   const [openModalUserPassword, setOpenModalUserPassword] = useState(false);
-  const [projectsInfo, setProjectsInfo] = useState([]);
+  const [projectsInfo, setProjectsInfo] = useState("");
   const router = useRouter();
 
   useEffect(() => {
@@ -93,10 +93,21 @@ const DashboardUser = () => {
         <div className="flex flex-col gap-4">
           <p className="text-xl">Your projects: </p>
           <div className="flex gap-4">
-            {projectsInfo.map((project) => (
-              <CardProject project={project} />
-            ))}
+            {projectsInfo ? (
+              projectsInfo.map((project) => <CardProject project={project} />)
+            ) : (
+              <>
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+              </>
+            )}
           </div>
+          <button
+            className="signin-button border-white/50 hover:border-white"
+            onClick={logOut}
+          >
+            log Out
+          </button>
         </div>
       </div>
     );

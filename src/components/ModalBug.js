@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import { RiCloseFill, RiSendPlane2Fill, RiUser3Fill } from "react-icons/ri";
 import BugComment from "./BugComment";
+import UserSkeleton from "./UserSkeleton";
 
 const ModalBug = ({ setOpenModalBug, bug }) => {
   const {
@@ -17,8 +18,8 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     createBugComment,
     getBugComments,
   } = useAuth();
-  const [userInfo, setUserInfo] = useState([]);
-  const [responsable, setResponsable] = useState([]);
+  const [userInfo, setUserInfo] = useState("");
+  const [responsable, setResponsable] = useState("");
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState({
     user: currentUser.uid,
@@ -109,50 +110,61 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <label htmlFor="owner" className="text-white/50 text-sm">
                 owner:
               </label>
-              <div className="flex gap-2 mt-1" id="owner">
-                {!userInfo.photoURL ? (
-                  <RiUser3Fill className="text-decoration" />
-                ) : (
-                  <Image
-                    src={userInfo.photoURL}
-                    width={50}
-                    height={50}
-                    alt="user-photo"
-                    className="user-photo"
-                  />
-                )}
-                <div className="flex flex-col justify-between">
-                  <p className="text-lg">{userInfo.displayName}</p>
-                  <p className="text-white/50">{userInfo.email}</p>
+              {userInfo ? (
+                <div className="flex gap-2 mt-1" id="owner">
+                  {!userInfo.photoURL ? (
+                    <RiUser3Fill className="text-decoration" />
+                  ) : (
+                    <Image
+                      src={userInfo.photoURL}
+                      width={50}
+                      height={50}
+                      alt="user-photo"
+                      className="user-photo w-12 h-12"
+                    />
+                  )}
+                  <div className="flex flex-col justify-between">
+                    <p className="text-lg">{userInfo.displayName}</p>
+                    <p className="text-white/50">{userInfo.email}</p>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <UserSkeleton />
+              )}
             </div>
             <div>
               <label htmlFor="responsable" className="text-white/50 text-sm">
                 responsable:
               </label>
               <div id="responsable" className="mt-1 flex flex-wrap gap-4">
-                {responsable.map((member) => (
-                  <div
-                    key={member.uid}
-                    className="flex flex-row items-center gap-2"
-                  >
-                    {!member.photoURL ? (
-                      <RiUser3Fill className="text-decoration" />
-                    ) : (
-                      <Image
-                        src={member.photoURL}
-                        width={50}
-                        height={50}
-                        alt="user-photo"
-                        className="user-photo w-12 h-12"
-                      />
-                    )}
-                    <span>{`${member.displayName} ${
-                      currentUser.uid === member.uid ? "(you)" : ""
-                    }`}</span>
-                  </div>
-                ))}
+                {responsable ? (
+                  responsable.map((member) => (
+                    <div
+                      key={member.uid}
+                      className="flex flex-row items-center gap-2"
+                    >
+                      {!member.photoURL ? (
+                        <RiUser3Fill className="text-decoration" />
+                      ) : (
+                        <Image
+                          src={member.photoURL}
+                          width={50}
+                          height={50}
+                          alt="user-photo"
+                          className="user-photo w-12 h-12"
+                        />
+                      )}
+                      <span>{`${member.displayName} ${
+                        currentUser.uid === member.uid ? "(you)" : ""
+                      }`}</span>
+                    </div>
+                  ))
+                ) : (
+                  <>
+                    <UserSkeleton />
+                    <UserSkeleton />
+                  </>
+                )}
               </div>
             </div>
             <div>
@@ -208,7 +220,6 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <div className="relative w-full">
                 <textarea
                   required
-                  autoFocus
                   id="comment"
                   name="comment"
                   rows="3"

@@ -1,5 +1,6 @@
 "use client";
 
+import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
@@ -8,7 +9,7 @@ import { RiUser3Fill } from "react-icons/ri";
 const DashboardReportIncident = () => {
   const { currentUser, createBugReport, getUserInfo, getTeamMembers } =
     useAuth();
-  const [teamMembers, setTeamMembers] = useState([]);
+  const [teamMembers, setTeamMembers] = useState("");
   const [bugData, setBugData] = useState({
     date: Date.now(),
     owner: currentUser.uid,
@@ -189,33 +190,46 @@ const DashboardReportIncident = () => {
               Responsable
             </label>
             <div id="responsable" className="flex flex-col gap-2 mt-2">
-              {teamMembers.map((member) => (
-                <label key={member.uid} className="input-container">
-                  <>
-                    {!member.photoURL ? (
-                      <RiUser3Fill className="text-decoration" />
-                    ) : (
-                      <Image
-                        src={member.photoURL}
-                        width={50}
-                        height={50}
-                        alt="user-photo"
-                        className="user-photo w-10 h-10"
-                      />
-                    )}
-                    <span>{`${member.displayName} ${
-                      currentUser.uid === member.uid ? "(you)" : ""
-                    }`}</span>
-                  </>
-                  <input
-                    type="checkbox"
-                    id="member"
-                    value={member.uid}
-                    onChange={handleChange}
-                  />
-                  <div className="checkmark" />
-                </label>
-              ))}
+              {teamMembers ? (
+                teamMembers.map((member) => (
+                  <div key={member.uid} className="input-container">
+                    <>
+                      {!member.photoURL ? (
+                        <RiUser3Fill className="text-decoration" />
+                      ) : (
+                        <Image
+                          src={member.photoURL}
+                          width={50}
+                          height={50}
+                          alt="user-photo"
+                          className="user-photo w-10 h-10"
+                        />
+                      )}
+                      <span>{`${member.displayName} ${
+                        currentUser.uid === member.uid ? "(you)" : ""
+                      }`}</span>
+                    </>
+                    <input
+                      type="checkbox"
+                      id="member"
+                      value={member.uid}
+                      onChange={handleChange}
+                    />
+                    <div className="checkmark" />
+                  </div>
+                ))
+              ) : (
+                <>
+                  <div className="input-container">
+                    <UserSkeleton />
+                    <div className="checkmark" />
+                  </div>
+                  <div className="input-container">
+                    <UserSkeleton />
+                    <div className="checkmark" />
+                  </div>
+                </>
+              )}
             </div>
           </div>
           <div className="relative">

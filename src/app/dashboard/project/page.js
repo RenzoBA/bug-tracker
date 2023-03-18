@@ -1,5 +1,6 @@
 "use client";
 
+import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import ClipboardJS from "clipboard";
 import Image from "next/image";
@@ -17,8 +18,8 @@ const DashboardTeam = () => {
     getDuration,
   } = useAuth();
   const [projectInfo, setProjectInfo] = useState("");
-  const [projectOwner, setProjectOwner] = useState({});
-  const [projectTeam, setProjectTeam] = useState([]);
+  const [projectOwner, setProjectOwner] = useState("");
+  const [projectTeam, setProjectTeam] = useState("");
   const [bugResume, setBugResume] = useState([]);
 
   useEffect(() => {
@@ -79,7 +80,13 @@ const DashboardTeam = () => {
     <div className="flex flex-col items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
       <div className="flex flex-col gap-10 w-3/4">
         <div>
-          <h1 className="text-6xl">{projectInfo.name}</h1>
+          <h1 className="text-6xl">
+            {projectInfo ? (
+              projectInfo.name
+            ) : (
+              <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
+            )}
+          </h1>
           <button
             className="copy-button flex flex-row gap-1 items-center text-white/50 hover:text-white"
             onClick={handleCopy}
@@ -93,52 +100,63 @@ const DashboardTeam = () => {
             <label htmlFor="owner" className="title">
               owner:
             </label>
-            <div className="flex gap-2 mt-1" id="owner">
-              {!projectOwner.photoURL ? (
-                <RiUser3Fill className="text-decoration" />
-              ) : (
-                <Image
-                  src={projectOwner.photoURL}
-                  width={50}
-                  height={50}
-                  alt="user-photo"
-                  className="user-photo"
-                />
-              )}
-              <div className="flex flex-col justify-between">
-                <span className="text-lg">{`${projectOwner.displayName} ${
-                  currentUser.uid === projectOwner.uid ? "(you)" : ""
-                }`}</span>
-                <p className="text-white/50">{projectOwner.email}</p>
+            {projectOwner ? (
+              <div className="flex gap-2 mt-1" id="owner">
+                {!projectOwner.photoURL ? (
+                  <RiUser3Fill className="text-decoration" />
+                ) : (
+                  <Image
+                    src={projectOwner.photoURL}
+                    width={50}
+                    height={50}
+                    alt="user-photo"
+                    className="user-photo"
+                  />
+                )}
+                <div className="flex flex-col justify-between">
+                  <span className="text-lg">{`${projectOwner.displayName} ${
+                    currentUser.uid === projectOwner.uid ? "(you)" : ""
+                  }`}</span>
+                  <p className="text-white/50">{projectOwner.email}</p>
+                </div>
               </div>
-            </div>
+            ) : (
+              <UserSkeleton />
+            )}
           </div>
           <div>
             <label htmlFor="team" className="title">
               team:
             </label>
             <div className="flex gap-4 mt-1" id="team">
-              {projectTeam.map((member) => (
-                <div className="flex flex-row gap-2" key={member.uid}>
-                  {!member.photoURL ? (
-                    <RiUser3Fill className="text-decoration" />
-                  ) : (
-                    <Image
-                      src={member.photoURL}
-                      width={50}
-                      height={50}
-                      alt="user-photo"
-                      className="user-photo"
-                    />
-                  )}
-                  <div className="flex flex-col justify-between">
-                    <span className="text-lg">{`${member.displayName} ${
-                      currentUser.uid === member.uid ? "(you)" : ""
-                    }`}</span>
-                    <p className="text-white/50">{member.email}</p>
+              {projectTeam ? (
+                projectTeam.map((member) => (
+                  <div className="flex flex-row gap-2" key={member.uid}>
+                    {!member.photoURL ? (
+                      <RiUser3Fill className="text-decoration" />
+                    ) : (
+                      <Image
+                        src={member.photoURL}
+                        width={50}
+                        height={50}
+                        alt="user-photo"
+                        className="user-photo"
+                      />
+                    )}
+                    <div className="flex flex-col justify-between">
+                      <span className="text-lg">{`${member.displayName} ${
+                        currentUser.uid === member.uid ? "(you)" : ""
+                      }`}</span>
+                      <p className="text-white/50">{member.email}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <>
+                  <UserSkeleton />
+                  <UserSkeleton />
+                </>
+              )}
             </div>
           </div>
         </div>
