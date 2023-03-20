@@ -94,7 +94,9 @@ const DashboardUser = () => {
           <p className="text-xl">Your projects: </p>
           <div className="flex gap-4">
             {projectsInfo ? (
-              projectsInfo.map((project) => <CardProject project={project} />)
+              projectsInfo.map((project) => (
+                <CardProject project={project} key={project.pid} />
+              ))
             ) : (
               <>
                 <ProjectSkeleton />

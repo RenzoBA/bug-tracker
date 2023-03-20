@@ -21,11 +21,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
   const [userInfo, setUserInfo] = useState("");
   const [responsable, setResponsable] = useState("");
   const [comments, setComments] = useState([]);
-  const [comment, setComment] = useState({
-    user: currentUser.uid,
-    date: Date.now(),
-    description: "",
-  });
+  const [comment, setComment] = useState("");
 
   console.log(bug);
   useEffect(() => {
@@ -34,17 +30,22 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
       setUserInfo(data);
 
       let team = [];
+      //pending: try to use "forEach" instead "for"
 
-      for (let i = 0; i < bug.team.length; i++) {
-        team.push({ ...(await getUserInfo(bug.team[i])), uid: bug.team[i] });
-      }
+      // for (let i = 0; i < bug.team.length; i++) {
+      //   const data = await getUserInfo(bug.team[i]);
+      //   team.push(data);
+      // }
+
+      bug.team.forEach(async (user) => {
+        const data = await getUserInfo(user);
+        team.push(data);
+      });
+
       setResponsable(team);
+      getBugComments(bug.bid, setComments);
     };
     getData();
-  }, []);
-
-  useEffect(() => {
-    getBugComments(bug.bid, setComments);
   }, []);
 
   const handleKeyDown = (e) => {
@@ -54,25 +55,10 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
     e.target === e.currentTarget && setOpenModalBug(false);
   };
 
-  const handleChange = (e) => {
-    setComment({
-      ...comment,
-      description: e.target.value,
-    });
-  };
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    setComment({
-      ...comment,
-      date: Date.now(),
-    });
     createBugComment(bug.bid, comment);
-    setComment({
-      user: currentUser.uid,
-      date: Date.now(),
-      description: "",
-    });
+    setComment("");
   };
 
   return createPortal(
@@ -98,7 +84,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <span className="bg-white/50 px-2 rounded-full mr-2">
                 {bug.priority}
               </span>
-              <span>{getDuration(bug.date)}</span>
+              <span>{getDuration(bug.date.seconds)}</span>
             </div>
             {bug.complete && (
               <p className="text-green-600 text-xl font-bold my-2">completed</p>
@@ -183,7 +169,11 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
               <label htmlFor="date" className="text-white/50 text-sm">
                 date:
               </label>
-              <p id="date">{new Date(bug.date).toUTCString()}</p>
+              <p id="date">
+                {`${new Date(
+                  bug.date.seconds * 1000
+                ).toLocaleString()} (local)`}
+              </p>
             </div>
           </div>
 
@@ -225,8 +215,8 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
                   rows="3"
                   placeholder="Comment"
                   className="input peer"
-                  value={comment.description}
-                  onChange={handleChange}
+                  value={comment}
+                  onChange={(e) => setComment(e.target.value)}
                 />
                 <label className="label" htmlFor="comment">
                   Comment

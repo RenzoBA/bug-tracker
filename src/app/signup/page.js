@@ -14,7 +14,7 @@ const Signup = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    sendSignInLink("http://localhost:3000/update_user", email);
+    sendSignInLink(email);
     setEmail("");
   };
 

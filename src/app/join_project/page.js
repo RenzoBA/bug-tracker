@@ -9,8 +9,8 @@ import Link from "next/link";
 
 const JoinProject = () => {
   const { currentUser, joinProject, setOpenPidContainer, logOut } = useAuth();
-  const router = useRouter();
   const [pid, setPid] = useState("");
+  const router = useRouter();
 
   const handleChange = (e) => {
     setPid(e.target.value);

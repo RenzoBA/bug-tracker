@@ -24,12 +24,12 @@ const DashboardReportIncident = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const arr = await getTeamMembers();
+      const teamMembers = await getTeamMembers();
 
       let team = [];
-
-      for (let i = 0; i < arr.length; i++) {
-        team.push({ ...(await getUserInfo(arr[i])), uid: arr[i] });
+      for (let i = 0; i < teamMembers.length; i++) {
+        const data = await getUserInfo(teamMembers[i]);
+        team.push(data);
       }
       setTeamMembers(team);
     };

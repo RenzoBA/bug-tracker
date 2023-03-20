@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 
-const PasswordReset = () => {
+const ResetPassword = () => {
   const { currentUser, resetUserPassword, modal, setModal } = useAuth();
   const [email, setEmail] = useState("");
   const router = useRouter();
@@ -63,4 +63,4 @@ const PasswordReset = () => {
   }
 };
 
-export default PasswordReset;
+export default ResetPassword;

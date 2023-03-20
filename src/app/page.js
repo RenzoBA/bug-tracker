@@ -65,7 +65,7 @@ const Home = () => {
             <Link href="/signup" className="link">
               Sign Up
             </Link>
-            <Link href="/password_reset" className="link">
+            <Link href="/reset_password" className="link">
               Forgot password?
             </Link>
           </div>

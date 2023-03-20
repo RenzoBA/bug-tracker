@@ -27,6 +27,7 @@ import {
   updateDoc,
   serverTimestamp,
   arrayUnion,
+  orderBy,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -61,19 +62,17 @@ const AuthProvider = ({ children }) => {
           );
           querySnapshot.forEach((doc) => {
             pids.push(doc.id);
+            // pids.push(doc.data().pid);
           });
-
           if (pids.length !== 0) {
             setCurrentPid(pids[0]);
           }
-
           setCurrentUser({ uid, displayName, email, photoURL, pids });
-          console.log("currentUser (useEffect): ", currentUser);
         } else {
           setCurrentUser(null);
         }
       } catch (error) {
-        console.log("Connection Error: ", error.message);
+        console.log(error.message);
       } finally {
         setLoading(false);
       }
@@ -83,11 +82,7 @@ const AuthProvider = ({ children }) => {
 
   const signIn = async (email, password) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(
-        auth,
-        email,
-        password
-      );
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
       setModal({
         open: true,
         title: "Great!",
@@ -95,14 +90,15 @@ const AuthProvider = ({ children }) => {
       });
       let pids = [];
       const querySnapshot = await getDocs(
-        collection(db, `users/${userCredential.user.uid}/projects`)
+        collection(db, `users/${user.uid}/projects`)
       );
       querySnapshot.forEach((doc) => {
         pids.push(doc.id);
+        // pids.push(doc.data().pid);
       });
       if (pids.length !== 0) {
-        router.push("/dashboard");
         setCurrentPid(pids[0]);
+        router.push("/dashboard");
       } else {
         router.push("/create_project");
       }
@@ -116,12 +112,12 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const sendSignInLink = async (url, email) => {
-    const actionCodeSettings = {
-      url: url,
-      handleCodeInApp: true,
-    };
+  const sendSignInLink = async (email) => {
     try {
+      const actionCodeSettings = {
+        url: "http://localhost:3000/update_user",
+        handleCodeInApp: true,
+      };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
       window.localStorage.setItem("emailForSignIn", email);
       setModal({
@@ -133,7 +129,7 @@ const AuthProvider = ({ children }) => {
       console.log(error.message);
     }
   };
-
+  console.log("currentUser HERE: ", currentUser);
   const signInLink = async () => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
       let email = window.localStorage.getItem("emailForSignIn");
@@ -149,38 +145,46 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const asignUserInfo = async (displayName, photoFile, password) => {
+  const setUserInfo = async (displayName, photoFile, password) => {
     try {
       if (photoFile === "") {
         await updateProfile(auth.currentUser, {
           displayName: displayName,
         });
         await setDoc(doc(db, `users/${currentUser.uid}`), {
+          uid: currentUser.uid,
           displayName: displayName,
           photoURL: "",
           email: currentUser.email,
         });
-        setCurrentUser({ ...currentUser, displayName: displayName });
+        // setCurrentUser({ ...currentUser, displayName: displayName });
       } else {
         const fileRef = ref(storage, `users/${currentUser.uid}`);
-        const snapshot = await uploadBytes(fileRef, photoFile);
+        await uploadBytes(fileRef, photoFile);
         const photoURL = await getDownloadURL(fileRef);
         await updateProfile(auth.currentUser, {
           displayName: displayName,
           photoURL: photoURL,
         });
         await setDoc(doc(db, `users/${currentUser.uid}`), {
+          uid: currentUser.uid,
           displayName: displayName,
           photoURL: photoURL,
           email: currentUser.email,
         });
-        setCurrentUser({
-          ...currentUser,
-          displayName: displayName,
-          photoURL: photoURL,
-        });
+        // setCurrentUser({
+        //   ...currentUser,
+        //   displayName: displayName,
+        //   photoURL: photoURL,
+        // });
       }
+      setCurrentUser({ ...currentUser, ...auth.currentUser });
       await updateUserPassword(password);
+      setModal({
+        open: true,
+        title: "User updated",
+        description: "Your information was updated.",
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -196,10 +200,10 @@ const AuthProvider = ({ children }) => {
         await updateDoc(doc(db, `users/${currentUser.uid}`), {
           displayName: displayName,
         });
-        setCurrentUser({ ...currentUser, displayName: displayName });
+        // setCurrentUser({ ...currentUser, displayName: displayName });
       } else {
         const fileRef = ref(storage, `users/${currentUser.uid}`);
-        const snapshot = await uploadBytes(fileRef, photoFile);
+        await uploadBytes(fileRef, photoFile);
         const photoURL = await getDownloadURL(fileRef);
         await updateProfile(auth.currentUser, {
           displayName: displayName,
@@ -209,12 +213,13 @@ const AuthProvider = ({ children }) => {
           displayName: displayName,
           photoURL: photoURL,
         });
-        setCurrentUser({
-          ...currentUser,
-          displayName: displayName,
-          photoURL: photoURL,
-        });
+        // setCurrentUser({
+        //   ...currentUser,
+        //   displayName: displayName,
+        //   photoURL: photoURL,
+        // });
       }
+      setCurrentUser({ ...currentUser, ...auth.currentUser });
       setModal({
         open: true,
         title: "User updated",
@@ -285,15 +290,17 @@ const AuthProvider = ({ children }) => {
 
   const getBugsResume = async (setBugResume) => {
     try {
-      const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
-      const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
-        const bugs = [];
-        querySnapshot.forEach((doc) => {
-          const { complete } = doc.data();
-          bugs.push({ complete, bid: doc.id });
-        });
-        setBugResume(bugs);
-      });
+      const unsubscribe = onSnapshot(
+        collection(db, `projects/${currentPid}/bugs/`),
+        (querySnapshot) => {
+          const bugs = [];
+          querySnapshot.forEach((doc) => {
+            const { complete } = doc.data();
+            bugs.push({ complete, bid: doc.id });
+          });
+          setBugResume(bugs);
+        }
+      );
       return () => unsubscribe();
     } catch (error) {
       console.log(error.message);
@@ -308,6 +315,7 @@ const AuthProvider = ({ children }) => {
   const removeUser = async () => {
     try {
       await deleteUser(auth.currentUser);
+      setCurrentUser(null);
       router.push("/");
     } catch (error) {
       console.log(error.message);
@@ -316,43 +324,56 @@ const AuthProvider = ({ children }) => {
 
   const createProject = async (projectData) => {
     try {
-      const docRef = await addDoc(collection(db, "projects"), {
+      // const docRef = await addDoc(collection(db, "projects"), {
+      //   ...projectData,
+      //   team: [currentUser.uid],
+      // });
+      const docRef = doc(collection(db, "projects"));
+      const date = serverTimestamp();
+
+      await setDoc(docRef, {
         ...projectData,
+        date,
+        pid: docRef.id,
         team: [currentUser.uid],
       });
 
-      await setDoc(
-        doc(db, `users/${currentUser.uid}/projects/${docRef.id}`),
-        projectData
-      );
+      await setDoc(doc(db, `users/${currentUser.uid}/projects/${docRef.id}`), {
+        ...projectData,
+        date,
+        pid: docRef.id,
+      });
       setCurrentPid(docRef.id);
+      setModal({
+        open: true,
+        title: "Project created",
+        description: "Your project was created.",
+      });
     } catch (error) {
       console.log(error.message);
     }
   };
 
-  const joinProject = async (pid) => {
+  const joinProject = async (projectID) => {
     try {
-      setCurrentPid(pid);
-      await updateDoc(doc(db, `projects/${pid}`), {
+      await updateDoc(doc(db, `projects/${projectID}`), {
         team: arrayUnion(currentUser.uid),
       });
 
-      const projectData = await getDoc(doc(db, `projects/${pid}`));
-      const { date, description, name, owner, requirements } =
-        projectData.data();
+      const project = await getDoc(doc(db, `projects/${projectID}`));
+      const { date, description, name, owner, requirements, pid } =
+        project.data();
 
-      console.log("projectData (join Project): ", projectData.data());
-
-      await setDoc(doc(db, `users/${currentUser.uid}/projects/${pid}`), {
+      await setDoc(doc(db, `users/${currentUser.uid}/projects/${projectID}`), {
         date,
         description,
         name,
         owner,
         requirements,
+        pid,
       });
-      console.log("join currentPid", currentPid);
       router.push("/dashboard");
+      setCurrentPid(projectID);
     } catch (error) {
       console.log(error.message);
     }
@@ -360,16 +381,22 @@ const AuthProvider = ({ children }) => {
 
   const createBugReport = async (bugData) => {
     try {
-      const docRef = await addDoc(
-        collection(db, `projects/${currentPid}/bugs/`),
-        bugData
-      );
+      // const docRef = await addDoc(
+      //   collection(db, `projects/${currentPid}/bugs/`),
+      //   bugData
+      // );
+      const docRef = doc(collection(db, `projects/${currentPid}/bugs`));
+      const date = serverTimestamp();
+      await setDoc(docRef, {
+        ...bugData,
+        date,
+        bid: docRef.id,
+      });
       setModal({
         open: true,
         title: "Bug added",
         description: "This bug was added.",
       });
-      console.log("Document written with ID: ", docRef.id);
     } catch (error) {
       console.log(error.message);
     }
@@ -379,7 +406,7 @@ const AuthProvider = ({ children }) => {
     try {
       await updateDoc(doc(db, `projects/${currentPid}/bugs/${bid}`), {
         complete: !complete,
-        updated: serverTimestamp(),
+        // updated: serverTimestamp(),
       });
       setModal({
         open: !complete,
@@ -395,10 +422,16 @@ const AuthProvider = ({ children }) => {
 
   const createBugComment = async (bid, comment) => {
     try {
-      await addDoc(
-        collection(db, `projects/${currentPid}/bugs/${bid}/comment`),
-        comment
+      const docRef = doc(
+        collection(db, `projects/${currentPid}/bugs/${bid}/comments`)
       );
+      const date = serverTimestamp();
+      await setDoc(docRef, {
+        date,
+        comment,
+        user: currentUser.uid,
+        bcid: docRef.id,
+      });
     } catch (error) {
       console.log(error.message);
     }
@@ -406,8 +439,8 @@ const AuthProvider = ({ children }) => {
 
   const deleteBugReport = async (bug) => {
     try {
-      console.log(bug);
       if (bug.owner === currentUser.uid) {
+        //pending: delete bug comments collection
         await deleteDoc(doc(db, `projects/${currentPid}/bugs`, bug.bid));
         setModal({
           open: true,
@@ -418,7 +451,7 @@ const AuthProvider = ({ children }) => {
         setModal({
           open: true,
           title: "Cannot be deleted",
-          description: "Only the owner can delete it.",
+          description: "Only the bug owner can delete it.",
         });
       }
     } catch (error) {
@@ -428,32 +461,16 @@ const AuthProvider = ({ children }) => {
 
   const getBugComments = (bid, setBugComments) => {
     try {
-      const qBugComments = query(
-        collection(db, `projects/${currentPid}/bugs/${bid}/comment`)
+      const q = query(
+        collection(db, `projects/${currentPid}/bugs/${bid}/comments`),
+        orderBy("date", "desc")
       );
-      const unsubscribe = onSnapshot(qBugComments, (querySnapshot) => {
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const comments = [];
         querySnapshot.forEach((doc) => {
-          comments.push({ ...doc.data(), bcid: doc.id });
+          comments.push(doc.data());
         });
         setBugComments(comments);
-      });
-      console.log("currentUser: ", currentUser);
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
-  const getBugReports = (setBugReports) => {
-    try {
-      console.log("currentPid", currentPid);
-      const qBugs = query(collection(db, `projects/${currentPid}/bugs/`));
-      const unsubscribe = onSnapshot(qBugs, (querySnapshot) => {
-        const bugs = [];
-        querySnapshot.forEach((doc) => {
-          bugs.push({ ...doc.data(), bid: doc.id });
-        });
-        setBugReports(bugs);
       });
       return () => unsubscribe();
     } catch (error) {
@@ -461,21 +478,26 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // const copyPid = () => {
-  //   try {
-  //     //copy currentPid
-  //     setModal({
-  //       open: true,
-  //       title: "PID copied",
-  //       description: "Project ID was copied correctly.",
-  //     });
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
+  const getBugReports = (setBugReports) => {
+    try {
+      const unsubscribe = onSnapshot(
+        collection(db, `projects/${currentPid}/bugs/`),
+        (querySnapshot) => {
+          const bugs = [];
+          querySnapshot.forEach((doc) => {
+            bugs.push(doc.data());
+          });
+          setBugReports(bugs);
+        }
+      );
+      return () => unsubscribe();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
 
   const getDuration = (start) => {
-    const seconds = (Date.now() - start) / 1000;
+    const seconds = Date.now() / 1000 - start;
     return seconds < 60
       ? "0m ago"
       : seconds < 3600
@@ -501,7 +523,7 @@ const AuthProvider = ({ children }) => {
     signIn,
     sendSignInLink,
     signInLink,
-    asignUserInfo,
+    setUserInfo,
     updateUserInfo,
     updateUserPassword,
     resetUserPassword,

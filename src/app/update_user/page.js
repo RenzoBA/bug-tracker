@@ -8,7 +8,7 @@ import { RiBug2Fill } from "react-icons/ri";
 import { useAuth } from "@/context/AuthProvider";
 
 const UpdateUser = () => {
-  const { currentUser, signInLink, asignUserInfo } = useAuth();
+  const { currentUser, signInLink, setUserInfo } = useAuth();
   const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [photoFile, setPhotoFile] = useState("");
@@ -31,7 +31,7 @@ const UpdateUser = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    asignUserInfo(displayName, photoFile, password);
+    setUserInfo(displayName, photoFile, password);
     // router.push("/create_project");
   };
 

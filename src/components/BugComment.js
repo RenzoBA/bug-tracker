@@ -18,8 +18,10 @@ const BugComment = ({ comment }) => {
   return (
     <div className="bg-primary/50 p-4 rounded-lg">
       <p className="font-medium">{userInfo.displayName}</p>
-      <p className="text-sm text-white/50">{getDuration(comment.date)}</p>
-      <p className="mt-2 font-light">{comment.description}</p>
+      <p className="text-sm text-white/50">
+        {comment.date ? getDuration(comment.date?.seconds) : "0m ago"}
+      </p>
+      <p className="mt-2 font-light">{comment.comment}</p>
     </div>
   );
 };
