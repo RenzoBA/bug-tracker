@@ -23,26 +23,18 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
   const [comments, setComments] = useState([]);
   const [comment, setComment] = useState("");
 
-  console.log(bug);
   useEffect(() => {
     const getData = async () => {
-      const data = await getUserInfo(bug.owner);
-      setUserInfo(data);
+      const userInfo = await getUserInfo(bug.owner);
+      setUserInfo(userInfo);
 
       let team = [];
-      //pending: try to use "forEach" instead "for"
-
-      // for (let i = 0; i < bug.team.length; i++) {
-      //   const data = await getUserInfo(bug.team[i]);
-      //   team.push(data);
-      // }
-
-      bug.team.forEach(async (user) => {
-        const data = await getUserInfo(user);
+      for (let i = 0; i < bug.team.length; i++) {
+        const data = await getUserInfo(bug.team[i]);
         team.push(data);
-      });
-
+      }
       setResponsable(team);
+
       getBugComments(bug.bid, setComments);
     };
     getData();

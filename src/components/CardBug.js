@@ -11,9 +11,9 @@ const CardBug = ({ bug }) => {
   useEffect(() => {
     const getData = async () => {
       let team = [];
-
       for (let i = 0; i < bug.team.length; i++) {
-        team.push({ ...(await getUserInfo(bug.team[i])), uid: bug.team[i] });
+        const data = await getUserInfo(bug.team[i]);
+        team.push(data);
       }
       setResponsable(team);
     };
@@ -44,7 +44,7 @@ const CardBug = ({ bug }) => {
         <div className="flex flex-row justify-between w-full">
           <div className="flex flex-row gap-2 text-sm font-light">
             <div>
-              <p>{getDuration(bug.date)}</p>
+              <p>{getDuration(bug.date.seconds)}</p>
               <label className="text-xs text-white/50">Published</label>
             </div>
             <div>

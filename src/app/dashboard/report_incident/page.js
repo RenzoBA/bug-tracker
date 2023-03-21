@@ -11,7 +11,6 @@ const DashboardReportIncident = () => {
     useAuth();
   const [teamMembers, setTeamMembers] = useState("");
   const [bugData, setBugData] = useState({
-    date: Date.now(),
     owner: currentUser.uid,
     title: "",
     resume: "",
@@ -24,11 +23,11 @@ const DashboardReportIncident = () => {
 
   useEffect(() => {
     const getData = async () => {
-      const teamMembers = await getTeamMembers();
+      const teamMembersUid = await getTeamMembers();
 
       let team = [];
-      for (let i = 0; i < teamMembers.length; i++) {
-        const data = await getUserInfo(teamMembers[i]);
+      for (let i = 0; i < teamMembersUid.length; i++) {
+        const data = await getUserInfo(teamMembersUid[i]);
         team.push(data);
       }
       setTeamMembers(team);
@@ -59,14 +58,10 @@ const DashboardReportIncident = () => {
     }
   };
 
-  console.log("bug data", bugData);
-
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log("submit", bugData);
     createBugReport(bugData);
     setBugData({
-      date: Date.now(),
       owner: currentUser.uid,
       title: "",
       resume: "",

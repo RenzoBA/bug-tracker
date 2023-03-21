@@ -16,7 +16,6 @@ import {
 } from "firebase/auth";
 import {
   setDoc,
-  addDoc,
   getDoc,
   getDocs,
   onSnapshot,
@@ -61,8 +60,7 @@ const AuthProvider = ({ children }) => {
             collection(db, `users/${uid}/projects`)
           );
           querySnapshot.forEach((doc) => {
-            pids.push(doc.id);
-            // pids.push(doc.data().pid);
+            pids.push(doc.data().pid);
           });
           if (pids.length !== 0) {
             setCurrentPid(pids[0]);
@@ -93,8 +91,7 @@ const AuthProvider = ({ children }) => {
         collection(db, `users/${user.uid}/projects`)
       );
       querySnapshot.forEach((doc) => {
-        pids.push(doc.id);
-        // pids.push(doc.data().pid);
+        pids.push(doc.data().pid);
       });
       if (pids.length !== 0) {
         setCurrentPid(pids[0]);
@@ -129,7 +126,7 @@ const AuthProvider = ({ children }) => {
       console.log(error.message);
     }
   };
-  console.log("currentUser HERE: ", currentUser);
+
   const signInLink = async () => {
     if (isSignInWithEmailLink(auth, window.location.href)) {
       let email = window.localStorage.getItem("emailForSignIn");
@@ -172,11 +169,6 @@ const AuthProvider = ({ children }) => {
           photoURL: photoURL,
           email: currentUser.email,
         });
-        // setCurrentUser({
-        //   ...currentUser,
-        //   displayName: displayName,
-        //   photoURL: photoURL,
-        // });
       }
       setCurrentUser({ ...currentUser, ...auth.currentUser });
       await updateUserPassword(password);
@@ -200,7 +192,6 @@ const AuthProvider = ({ children }) => {
         await updateDoc(doc(db, `users/${currentUser.uid}`), {
           displayName: displayName,
         });
-        // setCurrentUser({ ...currentUser, displayName: displayName });
       } else {
         const fileRef = ref(storage, `users/${currentUser.uid}`);
         await uploadBytes(fileRef, photoFile);
@@ -213,11 +204,6 @@ const AuthProvider = ({ children }) => {
           displayName: displayName,
           photoURL: photoURL,
         });
-        // setCurrentUser({
-        //   ...currentUser,
-        //   displayName: displayName,
-        //   photoURL: photoURL,
-        // });
       }
       setCurrentUser({ ...currentUser, ...auth.currentUser });
       setModal({
@@ -324,10 +310,6 @@ const AuthProvider = ({ children }) => {
 
   const createProject = async (projectData) => {
     try {
-      // const docRef = await addDoc(collection(db, "projects"), {
-      //   ...projectData,
-      //   team: [currentUser.uid],
-      // });
       const docRef = doc(collection(db, "projects"));
       const date = serverTimestamp();
 
@@ -342,6 +324,10 @@ const AuthProvider = ({ children }) => {
         ...projectData,
         date,
         pid: docRef.id,
+      });
+      setCurrentUser({
+        ...currentUser,
+        pids: [...currentUser.pids, docRef.id],
       });
       setCurrentPid(docRef.id);
       setModal({
@@ -372,8 +358,12 @@ const AuthProvider = ({ children }) => {
         requirements,
         pid,
       });
-      router.push("/dashboard");
+      setCurrentUser({
+        ...currentUser,
+        pids: [...currentUser.pids, pid],
+      });
       setCurrentPid(projectID);
+      router.push("/dashboard");
     } catch (error) {
       console.log(error.message);
     }
@@ -381,10 +371,6 @@ const AuthProvider = ({ children }) => {
 
   const createBugReport = async (bugData) => {
     try {
-      // const docRef = await addDoc(
-      //   collection(db, `projects/${currentPid}/bugs/`),
-      //   bugData
-      // );
       const docRef = doc(collection(db, `projects/${currentPid}/bugs`));
       const date = serverTimestamp();
       await setDoc(docRef, {
@@ -406,7 +392,6 @@ const AuthProvider = ({ children }) => {
     try {
       await updateDoc(doc(db, `projects/${currentPid}/bugs/${bid}`), {
         complete: !complete,
-        // updated: serverTimestamp(),
       });
       setModal({
         open: !complete,

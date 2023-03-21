@@ -22,19 +22,14 @@ const DashboardUser = () => {
       const getData = async () => {
         let projects = [];
         for (let i = 0; i < currentUser.pids.length; i++) {
-          const projectInfo = await getProjectInfo(currentUser.pids[i]);
-          projects.push({
-            ...projectInfo,
-            pid: currentUser.pids[i],
-          });
+          const data = await getProjectInfo(currentUser.pids[i]);
+          projects.push(data);
         }
         setProjectsInfo(projects);
       };
       getData();
     }
   }, []);
-
-  console.log(projectsInfo);
 
   if (currentUser) {
     return (
@@ -92,7 +87,7 @@ const DashboardUser = () => {
         </div>
         <div className="flex flex-col gap-4">
           <p className="text-xl">Your projects: </p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-2">
             {projectsInfo ? (
               projectsInfo.map((project) => (
                 <CardProject project={project} key={project.pid} />
@@ -104,13 +99,13 @@ const DashboardUser = () => {
               </>
             )}
           </div>
-          <button
-            className="signin-button border-white/50 hover:border-white"
-            onClick={logOut}
-          >
-            log Out
-          </button>
         </div>
+        <button
+          className="signin-button w-40 border-white/50 hover:border-white"
+          onClick={logOut}
+        >
+          log Out
+        </button>
       </div>
     );
   }

@@ -16,7 +16,7 @@
   }
 
   .input-container input {
-    @apply absolute opacity-0 top-1/2 left-0 cursor-pointer h-5 w-5;
+    @apply absolute opacity-0 cursor-pointer h-full w-full;
   }
 
   .input-container input:checked ~ .checkmark {

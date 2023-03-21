@@ -28,32 +28,28 @@ const Header = () => {
     if (currentUser && currentPid) {
       const getData = async () => {
         const { name } = await getProjectInfo(currentPid);
-        console.log("name", name);
         setCurrentProject(name);
       };
       getData();
     }
   }, [currentUser, currentPid]);
-  console.log("header");
 
   useEffect(() => {
     if (currentUser) {
-      console.log("useeffect 2", currentPid);
       const getData = async () => {
         let projects = [];
         for (let i = 0; i < currentUser.pids.length; i++) {
-          const { name } = await getProjectInfo(currentUser.pids[i]);
-
+          const { name, pid } = await getProjectInfo(currentUser.pids[i]);
           projects.push({
             name,
-            pid: currentUser.pids[i],
+            pid,
           });
         }
         setProjectsInfo(projects);
       };
       getData();
     }
-  }, [currentUser]);
+  }, [currentUser, currentPid]);
 
   const handleBackdropClick = (e) => {
     e.target === e.currentTarget && setOpenPidContainer(false);
@@ -90,9 +86,6 @@ const Header = () => {
                       ? `${currentProject.slice(0, 15)}...`
                       : currentProject}
                   </h2>
-                  {/* <p className="text-sm font-light text-white/50">
-                    {`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}
-                  </p> */}
                 </div>
                 <span>
                   {openPidContainer ? <RiArrowUpSLine /> : <RiArrowDownSLine />}

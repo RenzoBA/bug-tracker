@@ -11,13 +11,12 @@ const CardProject = ({ project }) => {
   return (
     <Link
       href="/dashboard"
-      className="flex flex-col gap-2 px-4 py-2 rounded-lg bg-secondary hover:bg-secondary/50 w-60 h-60"
+      className={`${
+        currentPid === project.pid ? "bg-secondary" : "bg-secondary/50"
+      } flex flex-col gap-2 p-4 rounded-lg hover:bg-secondary w-60 h-60`}
       onClick={handleClick}
     >
       <div>
-        <label htmlFor="project" className="text-white/50 text-sm">
-          project:
-        </label>
         <p
           className={`${
             currentPid === project.pid && "text-decoration"

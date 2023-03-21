@@ -25,35 +25,22 @@ const DashboardTeam = () => {
   useEffect(() => {
     const getData = async () => {
       const projectInfo = await getProjectInfo(currentPid);
-      setProjectInfo({ ...projectInfo, pid: currentPid });
+      setProjectInfo(projectInfo);
+
+      const projectOwner = await getUserInfo(projectInfo.owner);
+      setProjectOwner(projectOwner);
+
+      let team = [];
+      for (let i = 0; i < projectInfo.team.length; i++) {
+        const data = await getUserInfo(projectInfo.team[i]);
+        team.push(data);
+      }
+      setProjectTeam(team);
 
       await getBugsResume(setBugResume);
     };
     getData();
   }, []);
-  console.log(bugResume);
-  useEffect(() => {
-    if (projectInfo) {
-      const getData = async () => {
-        const projectOwner = await getUserInfo(projectInfo.owner);
-        setProjectOwner({ ...projectOwner, uid: projectInfo.owner });
-
-        // console.log("project info", projectInfo);
-        let projectTeam = [];
-        for (let i = 0; i < projectInfo.team.length; i++) {
-          projectTeam.push({
-            ...(await getUserInfo(projectInfo.team[i])),
-            uid: projectInfo.team[i],
-          });
-        }
-        setProjectTeam(projectTeam);
-      };
-      getData();
-    }
-  }, [projectInfo]);
-
-  // console.log("project owner", projectOwner);
-  // console.log("project team", projectTeam);
 
   const handleCopy = (event) => {
     const clipboard = new ClipboardJS(event.currentTarget, {
@@ -166,7 +153,7 @@ const DashboardTeam = () => {
               <label htmlFor="date" className="title">
                 date:
               </label>
-              <p id="date">{getDuration(projectInfo.date)}</p>
+              <p id="date">{getDuration(projectInfo.date?.seconds)}</p>
             </div>
             <div>
               <label htmlFor="requirement" className="title">
@@ -190,13 +177,13 @@ const DashboardTeam = () => {
           <div>
             <h2 className="title mb-1">bugs complete:</h2>
             <span className="text-5xl">
-              {bugResume.filter((bug) => bug.complete !== true).length}
+              {bugResume.filter((bug) => bug.complete === true).length}
             </span>
           </div>
           <div>
             <h2 className="title mb-1">pending bugs:</h2>
             <span className="text-5xl">
-              {bugResume.filter((bug) => bug.complete === true).length}
+              {bugResume.filter((bug) => bug.complete !== true).length}
             </span>
           </div>
         </div>
