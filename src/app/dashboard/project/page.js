@@ -43,7 +43,7 @@ const DashboardTeam = () => {
       await getBugsResume(setBugResume);
     };
     getData();
-  }, [openModalProjectInfo]);
+  }, [openModalProjectInfo, currentPid]);
 
   const handleCopy = (event) => {
     const clipboard = new ClipboardJS(event.currentTarget, {
@@ -92,7 +92,7 @@ const DashboardTeam = () => {
                 <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
               )}
               <button
-                className="text-2xl copy-button flex flex-row gap-1 items-center"
+                className="text-2xl copy-button flex flex-row gap-1 items-center mt-2"
                 onClick={handleCopy}
               >
                 {`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}

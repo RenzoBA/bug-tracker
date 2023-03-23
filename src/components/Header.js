@@ -59,7 +59,7 @@ const Header = () => {
     setCurrentProject(project.name);
     setOpenPidContainer(false);
     setCurrentPid(project.pid);
-    setCategorySelected("dashboard");
+    // setCategorySelected("dashboard");
   };
 
   return (
@@ -97,8 +97,8 @@ const Header = () => {
                 } flex-col gap-1 absolute p-2 w-full bg-primary rounded-lg`}
               >
                 {projectsInfo.map((project) => (
-                  <Link
-                    href="/dashboard"
+                  <button
+                    // href="/dashboard"
                     key={project.pid}
                     onClick={() => handleCurrentProject(project)}
                     className={`${
@@ -117,7 +117,7 @@ const Header = () => {
                         -5
                       )}`}
                     </p>
-                  </Link>
+                  </button>
                 ))}
                 <hr className="border-white/5" />
                 <Link

@@ -364,6 +364,7 @@ const AuthProvider = ({ children }) => {
 
       await setDoc(docRef, {
         ...projectData,
+        owner: currentUser.uid,
         date,
         pid: docRef.id,
         team: [currentUser.uid],
@@ -384,6 +385,7 @@ const AuthProvider = ({ children }) => {
         title: "Project created",
         description: "Your project was created.",
       });
+      router.push("/dashboard");
     } catch (error) {
       console.log(error.message);
     }
@@ -424,8 +426,10 @@ const AuthProvider = ({ children }) => {
       const date = serverTimestamp();
       await setDoc(docRef, {
         ...bugData,
+        owner: currentUser.uid,
         date,
         bid: docRef.id,
+        complete: false,
       });
       setModal({
         open: true,
@@ -514,16 +518,17 @@ const AuthProvider = ({ children }) => {
 
   const getBugReports = (setBugReports) => {
     try {
-      const unsubscribe = onSnapshot(
+      const q = query(
         collection(db, `projects/${currentPid}/bugs/`),
-        (querySnapshot) => {
-          const bugs = [];
-          querySnapshot.forEach((doc) => {
-            bugs.push(doc.data());
-          });
-          setBugReports(bugs);
-        }
+        orderBy("date", "asc")
       );
+      const unsubscribe = onSnapshot(q, (querySnapshot) => {
+        const bugs = [];
+        querySnapshot.forEach((doc) => {
+          bugs.push(doc.data());
+        });
+        setBugReports(bugs);
+      });
       return () => unsubscribe();
     } catch (error) {
       console.log(error.message);

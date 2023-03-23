@@ -11,8 +11,6 @@ const CreateProject = () => {
   const { currentUser, createProject, setOpenPidContainer, logOut } = useAuth();
   const router = useRouter();
   const [projectData, setProjectData] = useState({
-    date: Date.now(),
-    owner: currentUser?.uid,
     name: "",
     description: "",
     requirements: "",
@@ -33,14 +31,10 @@ const CreateProject = () => {
     e.preventDefault();
     createProject(projectData);
     setProjectData({
-      date: Date.now(),
-      owner: currentUser.uid,
       name: "",
       description: "",
       requirements: "",
-      team: [currentUser.uid],
     });
-    router.push("/dashboard");
   };
 
   console.log("currentUser: ", currentUser);
