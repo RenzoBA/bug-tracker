@@ -29,7 +29,7 @@ const DashboardUser = () => {
       };
       getData();
     }
-  }, []);
+  }, [currentUser]);
 
   if (currentUser) {
     return (
@@ -58,7 +58,10 @@ const DashboardUser = () => {
                 <RiPencilFill />
               </button>
               {openModalUserInfo && (
-                <ModalUserInfo setOpenModalUserInfo={setOpenModalUserInfo} />
+                <ModalUserInfo
+                  setOpenModalUserInfo={setOpenModalUserInfo}
+                  currentUser={currentUser}
+                />
               )}
             </div>
             <h3 className="text-2xl">{currentUser.email}</h3>

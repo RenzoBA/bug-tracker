@@ -128,7 +128,7 @@ const DashboardReportIncident = () => {
               name="resume"
               rows="3"
               placeholder="Resume"
-              className="input peer"
+              className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
               value={bugData.resume}
               onChange={handleChange}
             />
@@ -143,7 +143,7 @@ const DashboardReportIncident = () => {
               name="description"
               rows="5"
               placeholder="Description"
-              className="input peer"
+              className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
               value={bugData.description}
               onChange={handleChange}
             />

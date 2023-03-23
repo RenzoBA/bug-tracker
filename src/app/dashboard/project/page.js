@@ -1,11 +1,12 @@
 "use client";
 
+import ModalProjectInfo from "@/components/ModalProjectInfo";
 import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import ClipboardJS from "clipboard";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import { RiFileCopyLine, RiUser3Fill } from "react-icons/ri";
+import { RiFileCopyLine, RiPencilFill, RiUser3Fill } from "react-icons/ri";
 
 const DashboardTeam = () => {
   const {
@@ -15,18 +16,20 @@ const DashboardTeam = () => {
     getProjectInfo,
     getBugsResume,
     setModal,
+    removeProject,
     getDuration,
   } = useAuth();
+
   const [projectInfo, setProjectInfo] = useState("");
   const [projectOwner, setProjectOwner] = useState("");
   const [projectTeam, setProjectTeam] = useState("");
   const [bugResume, setBugResume] = useState([]);
+  const [openModalProjectInfo, setOpenModalProjectInfo] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
       const projectInfo = await getProjectInfo(currentPid);
       setProjectInfo(projectInfo);
-
       const projectOwner = await getUserInfo(projectInfo.owner);
       setProjectOwner(projectOwner);
 
@@ -40,7 +43,7 @@ const DashboardTeam = () => {
       await getBugsResume(setBugResume);
     };
     getData();
-  }, []);
+  }, [openModalProjectInfo]);
 
   const handleCopy = (event) => {
     const clipboard = new ClipboardJS(event.currentTarget, {
@@ -50,7 +53,7 @@ const DashboardTeam = () => {
       setModal({
         open: true,
         title: "PID copied",
-        description: "Project ID was copied correctly.",
+        description: "Share it with your teammates to join this project.",
       });
     });
     clipboard.on("error", () => {
@@ -67,20 +70,54 @@ const DashboardTeam = () => {
     <div className="flex flex-col items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
       <div className="flex flex-col gap-10 w-3/4">
         <div>
-          <h1 className="text-6xl">
-            {projectInfo ? (
-              projectInfo.name
-            ) : (
-              <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
-            )}
-          </h1>
-          <button
-            className="copy-button flex flex-row gap-1 items-center text-white/50 hover:text-white"
-            onClick={handleCopy}
-          >
-            <RiFileCopyLine className="text-xl" />
-            {`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}
-          </button>
+          {currentUser.uid === projectOwner.uid ? (
+            <>
+              {projectInfo ? (
+                <div className="flex flex-row gap-3 items-center">
+                  <h1 className="text-6xl font-semibold">{projectInfo.name}</h1>
+                  <button
+                    onClick={() => setOpenModalProjectInfo(true)}
+                    className="text-5xl text-white/50 hover:text-white"
+                  >
+                    <RiPencilFill />
+                  </button>
+                  {openModalProjectInfo && (
+                    <ModalProjectInfo
+                      setOpenModalProjectInfo={setOpenModalProjectInfo}
+                      projectInfo={projectInfo}
+                    />
+                  )}
+                </div>
+              ) : (
+                <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
+              )}
+              <button
+                className="text-2xl copy-button flex flex-row gap-1 items-center"
+                onClick={handleCopy}
+              >
+                {`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}
+                <RiFileCopyLine className="text-3xl" />
+              </button>
+              <button
+                onClick={removeProject}
+                className="text-red-500/50 hover:text-red-500 mt-4"
+              >
+                Delete Project
+              </button>
+            </>
+          ) : (
+            <>
+              {projectInfo ? (
+                <h1 className="text-6xl font-semibold">{projectInfo.name}</h1>
+              ) : (
+                <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
+              )}
+              <span className="text-2xl copy-button flex flex-row gap-1 items-center">{`${currentPid.slice(
+                0,
+                5
+              )}.....${currentPid.slice(-5)}`}</span>
+            </>
+          )}
         </div>
         <div>
           <div>
@@ -171,18 +208,18 @@ const DashboardTeam = () => {
         </div>
         <div className="flex flex-row justify-between rounded-lg bg-secondary w-full p-5 text-center">
           <div>
-            <h2 className="title mb-1">total bugs:</h2>
-            <span className="text-5xl">{bugResume.length}</span>
+            <h2 className="title mb-2">total bugs:</h2>
+            <span className="text-6xl">{bugResume.length}</span>
           </div>
           <div>
-            <h2 className="title mb-1">bugs complete:</h2>
-            <span className="text-5xl">
+            <h2 className="title mb-2">bugs complete:</h2>
+            <span className="text-6xl">
               {bugResume.filter((bug) => bug.complete === true).length}
             </span>
           </div>
           <div>
-            <h2 className="title mb-1">pending bugs:</h2>
-            <span className="text-5xl">
+            <h2 className="title mb-2">pending bugs:</h2>
+            <span className="text-6xl">
               {bugResume.filter((bug) => bug.complete !== true).length}
             </span>
           </div>

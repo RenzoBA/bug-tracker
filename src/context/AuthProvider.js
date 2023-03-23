@@ -154,7 +154,6 @@ const AuthProvider = ({ children }) => {
           photoURL: "",
           email: currentUser.email,
         });
-        // setCurrentUser({ ...currentUser, displayName: displayName });
       } else {
         const fileRef = ref(storage, `users/${currentUser.uid}`);
         await uploadBytes(fileRef, photoFile);
@@ -181,6 +180,24 @@ const AuthProvider = ({ children }) => {
       console.log(error.message);
     }
     router.push("/create_project");
+  };
+
+  const updateProjectInfo = async (projectInfo) => {
+    try {
+      await updateDoc(doc(db, `projects/${currentPid}`), {
+        name: projectInfo.name,
+        description: projectInfo.description,
+        requirements: projectInfo.requirements,
+      });
+
+      setModal({
+        open: true,
+        title: "Project updated",
+        description: "The project information was updated.",
+      });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const updateUserInfo = async (displayName, photoFile) => {
@@ -308,6 +325,38 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const removeProject = async () => {
+    try {
+      const { team } = await getProjectInfo(currentPid);
+      for (let i = 0; i < team.length; i++) {
+        await deleteDoc(doc(db, `users/${team[i]}/projects/${currentPid}`));
+      }
+      await deleteDoc(doc(db, `projects/${currentPid}`));
+
+      const currentPids = currentUser.pids.filter((pid) => pid !== currentPid);
+      setCurrentUser({
+        ...currentUser,
+        pids: currentPids,
+      });
+      if (currentPids.length > 0) {
+        setCurrentPid(currentPids[0]);
+        setCategorySelected("dashboard");
+        router.push("/dashboard");
+      } else {
+        setCurrentPid("");
+        setCategorySelected("dashboard");
+        router.push("/create_project");
+      }
+      setModal({
+        open: true,
+        title: "Project deleted",
+        description: "This project was deleted.",
+      });
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const createProject = async (projectData) => {
     try {
       const docRef = doc(collection(db, "projects"));
@@ -321,7 +370,7 @@ const AuthProvider = ({ children }) => {
       });
 
       await setDoc(doc(db, `users/${currentUser.uid}/projects/${docRef.id}`), {
-        ...projectData,
+        // ...projectData,
         date,
         pid: docRef.id,
       });
@@ -352,10 +401,10 @@ const AuthProvider = ({ children }) => {
 
       await setDoc(doc(db, `users/${currentUser.uid}/projects/${projectID}`), {
         date,
-        description,
-        name,
-        owner,
-        requirements,
+        // description,
+        // name,
+        // owner,
+        // requirements,
         pid,
       });
       setCurrentUser({
@@ -509,6 +558,7 @@ const AuthProvider = ({ children }) => {
     sendSignInLink,
     signInLink,
     setUserInfo,
+    updateProjectInfo,
     updateUserInfo,
     updateUserPassword,
     resetUserPassword,
@@ -518,6 +568,7 @@ const AuthProvider = ({ children }) => {
     getBugsResume,
     getTeamMembers,
     removeUser,
+    removeProject,
     createProject,
     joinProject,
     createBugReport,

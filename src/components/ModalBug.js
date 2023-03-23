@@ -206,7 +206,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
                   name="comment"
                   rows="3"
                   placeholder="Comment"
-                  className="input peer"
+                  className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
                   value={comment}
                   onChange={(e) => setComment(e.target.value)}
                 />

@@ -82,7 +82,7 @@ const Header = () => {
               >
                 <div>
                   <h2>
-                    {currentProject > 15
+                    {currentProject.length > 15
                       ? `${currentProject.slice(0, 15)}...`
                       : currentProject}
                   </h2>

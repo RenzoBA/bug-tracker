@@ -8,7 +8,14 @@ import { useAuth } from "@/context/AuthProvider";
 import Modal from "@/components/Modal";
 
 const Home = () => {
-  const { currentUser, currentPid, signIn, modal, setModal } = useAuth();
+  const {
+    currentUser,
+    currentPid,
+    signIn,
+    modal,
+    setModal,
+    setCategorySelected,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
@@ -16,6 +23,7 @@ const Home = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     signIn(email, password);
+    setCategorySelected("dashboard");
     setEmail("");
     setPassword("");
   };

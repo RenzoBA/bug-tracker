@@ -103,7 +103,7 @@ const CreateProject = () => {
                 name="description"
                 rows="5"
                 placeholder="Description"
-                className="input peer"
+                className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
                 value={projectData.description}
                 onChange={handleChange}
               />

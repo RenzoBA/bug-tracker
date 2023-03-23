@@ -6,8 +6,8 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { RiCloseFill } from "react-icons/ri";
 
-const ModalUserInfo = ({ setOpenModalUserInfo }) => {
-  const { currentUser, updateUserInfo } = useAuth();
+const ModalUserInfo = ({ currentUser, setOpenModalUserInfo }) => {
+  const { updateUserInfo } = useAuth();
   const [displayName, setDisplayName] = useState(currentUser.displayName);
   const [photoFile, setPhotoFile] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
@@ -95,7 +95,9 @@ const ModalUserInfo = ({ setOpenModalUserInfo }) => {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
             />
-            <label className="label">Display name</label>
+            <label className="label" htmlFor="display-name">
+              Display name
+            </label>
           </div>
           <button className="signin-button mt-4">Update</button>
         </form>
