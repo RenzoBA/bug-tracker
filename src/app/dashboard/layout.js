@@ -5,7 +5,7 @@ import Sidebar from "@/components/Sidebar";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthProvider";
 
-const layout = ({ children }) => {
+const DashboardLayout = ({ children }) => {
   const { currentUser, currentPid, modal, setModal, setOpenPidContainer } =
     useAuth();
   const router = useRouter();
@@ -29,4 +29,4 @@ const layout = ({ children }) => {
   }
 };
 
-export default layout;
+export default DashboardLayout;
