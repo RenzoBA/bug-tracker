@@ -20,6 +20,10 @@ const CardBug = ({ bug }) => {
     getData();
   }, []);
 
+  const handleClick = () => {
+    setOpenModalBug(true);
+  };
+
   return (
     <>
       <button
@@ -28,7 +32,7 @@ const CardBug = ({ bug }) => {
             ? "opacity-30 shadow-none grayscale"
             : "opacity-100 shadow grayscale-0"
         } flex flex-col justify-between items-start gap-2 bg-[#203a43] p-3 text-left rounded-md w-80 h-48`}
-        onClick={() => setOpenModalBug(true)}
+        onClick={handleClick}
       >
         <div>
           <h2 className="text-base">{bug.title}</h2>

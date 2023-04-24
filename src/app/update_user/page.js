@@ -9,7 +9,6 @@ import { useAuth } from "@/context/AuthProvider";
 
 const UpdateUser = () => {
   const { currentUser, signInLink, setUserInfo } = useAuth();
-  const router = useRouter();
   const [displayName, setDisplayName] = useState("");
   const [photoFile, setPhotoFile] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
@@ -32,7 +31,6 @@ const UpdateUser = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     setUserInfo(displayName, photoFile, password);
-    // router.push("/create_project");
   };
 
   if (currentUser) {

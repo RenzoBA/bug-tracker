@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 
 const Dashboard = () => {
-  const { currentPid, getBugReports, setCategorySelected } = useAuth();
+  const { currentPid, getBugReports } = useAuth();
   const [bugReports, setBugReports] = useState([]);
 
   useEffect(() => {
@@ -31,7 +31,6 @@ const Dashboard = () => {
             <Link
               href="/dashboard/report_incident"
               className="link text-base font-normal text-white/70"
-              onClick={() => setCategorySelected("report")}
             >
               add bugs
             </Link>{" "}
@@ -39,7 +38,6 @@ const Dashboard = () => {
             <Link
               href="/dashboard/project"
               className="link text-base font-normal text-white/70"
-              onClick={() => setCategorySelected("project")}
             >
               current project
             </Link>

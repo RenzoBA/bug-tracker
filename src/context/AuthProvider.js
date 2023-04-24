@@ -38,7 +38,6 @@ export const useAuth = () => useContext(AuthContext);
 const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [currentPid, setCurrentPid] = useState("");
-  const [categorySelected, setCategorySelected] = useState("dashboard");
   const [modal, setModal] = useState({
     open: false,
     title: "",
@@ -545,7 +544,7 @@ const AuthProvider = ({ children }) => {
       ? `${Math.round(seconds / 3600)}h ago`
       : seconds < 604800
       ? `${Math.round(seconds / 86400)}d ago`
-      : new Date(start).toDateString();
+      : new Date(start * 1000).toDateString();
   };
 
   const value = {
@@ -556,8 +555,6 @@ const AuthProvider = ({ children }) => {
     setModal,
     openPidContainer,
     setOpenPidContainer,
-    categorySelected,
-    setCategorySelected,
     loading,
     signIn,
     sendSignInLink,
