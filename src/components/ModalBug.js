@@ -69,8 +69,11 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
         <div className="flex flex-col gap-4 mt-4">
           <div>
             <div className="flex flex-wrap gap-1">
-              {bug.tags.map((tag) => (
-                <span className="text-sm font-light bg-[#41575f] px-2 rounded-sm text-white/50">
+              {bug.tags.map((tag, i) => (
+                <span
+                  key={i}
+                  className="text-sm font-light bg-[#41575f] px-2 rounded-sm text-white/50"
+                >
                   {tag.label}
                 </span>
               ))}
