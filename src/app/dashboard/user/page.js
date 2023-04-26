@@ -33,7 +33,7 @@ const DashboardUser = () => {
 
   if (currentUser) {
     return (
-      <div className="flex flex-col gap-10 items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
+      <div className="flex flex-col gap-10 items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
         <div className="flex gap-5">
           {!currentUser.photoURL ? (
             <RiUser3Fill className="text-decoration text-6xl" />

@@ -67,7 +67,7 @@ const DashboardTeam = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
       <div className="flex flex-col gap-10 w-3/4">
         <div>
           {currentUser.uid === projectOwner.uid ? (

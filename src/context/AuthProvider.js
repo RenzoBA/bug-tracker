@@ -27,6 +27,7 @@ import {
   serverTimestamp,
   arrayUnion,
   orderBy,
+  where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useRouter } from "next/navigation";
@@ -290,6 +291,39 @@ const AuthProvider = ({ children }) => {
     }
   };
 
+  const getTags = async (setProjectTags) => {
+    try {
+      const unsubscribe = onSnapshot(
+        collection(db, `projects/${currentPid}/tags/`),
+        (querySnapshot) => {
+          const tags = [];
+          querySnapshot.forEach((doc) => {
+            const tag = doc.data();
+            tags.push(tag);
+          });
+          setProjectTags(tags);
+        }
+      );
+      return () => unsubscribe();
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
+  const addTags = async (tagsCreated) => {
+    try {
+      console.log("adding...", tagsCreated);
+      for (let i = 0; i < tagsCreated.length; i++) {
+        await setDoc(
+          doc(collection(db, `projects/${currentPid}/tags`)),
+          tagsCreated[i]
+        );
+      }
+    } catch (error) {
+      console.log(error.message);
+    }
+  };
+
   const getBugsResume = async (setBugResume) => {
     try {
       const unsubscribe = onSnapshot(
@@ -367,6 +401,7 @@ const AuthProvider = ({ children }) => {
         date,
         pid: docRef.id,
         team: [currentUser.uid],
+        tags: [],
       });
 
       await setDoc(doc(db, `users/${currentUser.uid}/projects/${docRef.id}`), {
@@ -515,12 +550,33 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getBugReports = (setBugReports) => {
+  const getBugReports = (setBugReports, tagsToFilter, titleToFilter) => {
+    console.log("titleToFilter", titleToFilter);
     try {
-      const q = query(
+      let q = query(
         collection(db, `projects/${currentPid}/bugs/`),
         orderBy("date", "asc")
       );
+      if (tagsToFilter.length > 0 && titleToFilter) {
+        q = query(
+          collection(db, `projects/${currentPid}/bugs/`),
+          where("tags", "array-contains-any", tagsToFilter),
+          where("title", ">=", titleToFilter),
+          where("title", "<=", titleToFilter + "\uf8ff")
+        );
+      } else if (tagsToFilter.length > 0) {
+        q = query(
+          collection(db, `projects/${currentPid}/bugs/`),
+          orderBy("date", "asc"),
+          where("tags", "array-contains-any", tagsToFilter)
+        );
+      } else if (titleToFilter) {
+        q = query(
+          collection(db, `projects/${currentPid}/bugs/`),
+          where("title", ">=", titleToFilter),
+          where("title", "<=", titleToFilter + "\uf8ff")
+        );
+      }
       const unsubscribe = onSnapshot(q, (querySnapshot) => {
         const bugs = [];
         querySnapshot.forEach((doc) => {
@@ -567,6 +623,8 @@ const AuthProvider = ({ children }) => {
     logOut,
     getUserInfo,
     getProjectInfo,
+    getTags,
+    addTags,
     getBugsResume,
     getTeamMembers,
     removeUser,

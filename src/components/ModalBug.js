@@ -68,10 +68,14 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
         </div>
         <div className="flex flex-col gap-4 mt-4">
           <div>
-            <p className="font-light text-white/50">
-              {"#" + bug.tags.replaceAll(/[^A-Za-z0-9_\-']+/g, " #")}
-            </p>
-            <h2 className="text-3xl">{bug.title}</h2>
+            <div className="flex flex-wrap gap-1">
+              {bug.tags.map((tag) => (
+                <span className="text-sm font-light bg-[#41575f] px-2 rounded-sm text-white/50">
+                  {tag.label}
+                </span>
+              ))}
+            </div>
+            <h2 className="text-3xl py-2">{bug.title}</h2>
             <div>
               <span className="bg-white/50 px-2 rounded-full mr-2">
                 {bug.priority}

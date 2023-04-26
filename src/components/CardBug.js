@@ -23,7 +23,6 @@ const CardBug = ({ bug }) => {
   const handleClick = () => {
     setOpenModalBug(true);
   };
-
   return (
     <>
       <button
@@ -36,9 +35,16 @@ const CardBug = ({ bug }) => {
       >
         <div>
           <h2 className="text-base">{bug.title}</h2>
-          <p className="text-sm font-light text-white/50">
-            {"#" + bug.tags.replaceAll(/[^A-Za-z0-9_\-']+/g, " #")}
-          </p>
+          <div className="flex flex-wrap gap-1 mt-1">
+            {bug.tags.map((tag, i) => (
+              <span
+                key={i}
+                className="text-sm font-light bg-[#41575f] px-2 rounded-sm text-white/50"
+              >
+                {tag.label}
+              </span>
+            ))}
+          </div>
         </div>
         <p className="text-sm">
           {bug.resume.length <= 65

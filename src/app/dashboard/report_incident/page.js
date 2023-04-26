@@ -5,17 +5,27 @@ import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { useEffect, useState } from "react";
 import { RiUser3Fill } from "react-icons/ri";
+import CreatableSelect from "react-select/creatable";
 
 const DashboardReportIncident = () => {
-  const { currentUser, createBugReport, getUserInfo, getTeamMembers } =
-    useAuth();
+  const {
+    currentUser,
+    createBugReport,
+    getUserInfo,
+    getTeamMembers,
+    getTags,
+    addTags,
+  } = useAuth();
   const [teamMembers, setTeamMembers] = useState("");
+  const [tagsProject, setTagsProject] = useState([]);
+  const [tagsSelected, setTagsSelected] = useState([]);
+  const [tagsCreated, setTagsCreated] = useState([]);
   const [bugData, setBugData] = useState({
     title: "",
     resume: "",
     description: "",
     priority: "",
-    tags: "",
+    tags: [],
     team: [],
   });
 
@@ -29,6 +39,8 @@ const DashboardReportIncident = () => {
         team.push(data);
       }
       setTeamMembers(team);
+
+      getTags(setTagsProject);
     };
 
     getData();
@@ -59,18 +71,20 @@ const DashboardReportIncident = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     createBugReport(bugData);
+    addTags(tagsCreated);
+    setTagsSelected([]);
     setBugData({
       title: "",
       resume: "",
       description: "",
       priority: "",
-      tags: "",
+      tags: [],
       team: [],
     });
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen w-full pt-16 pl-[4.5rem]">
+    <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
       <div className="flex flex-col items-center gap-10 w-3/4">
         <h2 className="text-3xl sm:text-5xl lowercase text-decoration">
           Bug Report
@@ -208,43 +222,92 @@ const DashboardReportIncident = () => {
                     required
                     id="priority"
                     name="priority"
-                    className="input-2"
+                    className={`input-2 ${
+                      bugData.priority === "" ? "text-white/50" : "text-white"
+                    } bg-secondary`}
                     value={bugData.priority}
                     onChange={handleChange}
                   >
-                    <option value="" className="text-black/50">
+                    <option value="" className="text-white/50">
                       Select...
                     </option>
-                    <option value="low" className="text-black">
+                    <option value="low" className="text-white">
                       Low
                     </option>
-                    <option value="medium" className="text-black">
+                    <option value="medium" className="text-white">
                       Medium
                     </option>
-                    <option value="high" className="text-black">
+                    <option value="high" className="text-white">
                       High
                     </option>
-                    <option value="urgent" className="text-black">
+                    <option value="urgent" className="text-white">
                       Urgent
                     </option>
                   </select>
                 </div>
                 <div className="relative w-full">
-                  <input
+                  <CreatableSelect
                     required
+                    isMulti
                     id="tags"
-                    name="tags"
-                    type="text"
-                    placeholder="Tags"
-                    className="input peer"
-                    value={bugData.tags}
-                    onChange={handleChange}
+                    noOptionsMessage={() => "No tags yet"}
+                    placeholder="Select or create..."
+                    onChange={(tags) => {
+                      setBugData({ ...bugData, tags });
+                      setTagsSelected(tags);
+                      setTagsCreated(tags.filter((tag) => !tag.tid && tag));
+                    }}
+                    options={tagsProject}
+                    onCreateOption={(tag) => {
+                      const tagCreated = {
+                        label: tag,
+                        value: tag.toLowerCase(),
+                        tid: crypto.randomUUID(),
+                      };
+                      setBugData({
+                        ...bugData,
+                        tags: [...bugData.tags, tagCreated],
+                      });
+                      setTagsSelected([...tagsSelected, tagCreated]);
+                      setTagsCreated([...tagsCreated, tagCreated]);
+                    }}
+                    value={tagsSelected}
+                    theme={(theme) => ({
+                      ...theme,
+                      colors: {
+                        ...theme.colors,
+                        primary: "transparent", // input border focus
+                        primary25: "#41575f",
+                        primary50: "#41575f",
+                        neutral0: "#203A43", // input bg
+                        neutral10: "#41575f", //option bg
+                        neutral20: "#9ca3af", // down arrow
+                        neutral50: "#9ca3af", //"select..."
+                        neutral60: "#9ca3af", //down arrow focus
+                        neutral80: "white", //text color hover
+                      },
+                      spacing: {
+                        baseUnit: 3,
+                        controlHeight: 15,
+                        menuGutter: 2,
+                      },
+                    })}
+                    className="input peer text-base font-normal"
+                    styles={{
+                      control: (baseStyles, state) => ({
+                        ...baseStyles,
+                        borderStyle: "none",
+                        boxShadow: undefined,
+                        boxSizing: "border-box",
+                        cursor: "pointer",
+                        label: "control",
+                        minHeight: 15,
+                        position: "relative",
+                      }),
+                    }}
                   />
                   <label className="label" htmlFor="tags">
-                    Tags{" "}
-                    <span className="text-xs text-white/50">
-                      (separate with commas)
-                    </span>
+                    Tags
                   </label>
                 </div>
               </div>
