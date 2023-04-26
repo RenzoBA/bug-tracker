@@ -146,7 +146,6 @@ const UpdateUser = () => {
       </div>
     );
   }
-  // router.push("/");
 };
 
 export default UpdateUser;

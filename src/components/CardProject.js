@@ -2,11 +2,10 @@ import { useAuth } from "@/context/AuthProvider";
 import Link from "next/link";
 
 const CardProject = ({ project }) => {
-  const { currentPid, setCurrentPid, setCategorySelected } = useAuth();
+  const { currentPid, setCurrentPid } = useAuth();
 
   const handleClick = () => {
     setCurrentPid(project.pid);
-    setCategorySelected("dashboard");
   };
   return (
     <Link

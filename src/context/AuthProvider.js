@@ -373,11 +373,9 @@ const AuthProvider = ({ children }) => {
       });
       if (currentPids.length > 0) {
         setCurrentPid(currentPids[0]);
-        setCategorySelected("dashboard");
         router.push("/dashboard");
       } else {
         setCurrentPid("");
-        setCategorySelected("dashboard");
         router.push("/create_project");
       }
       setModal({
@@ -405,7 +403,6 @@ const AuthProvider = ({ children }) => {
       });
 
       await setDoc(doc(db, `users/${currentUser.uid}/projects/${docRef.id}`), {
-        // ...projectData,
         date,
         pid: docRef.id,
       });
@@ -432,15 +429,10 @@ const AuthProvider = ({ children }) => {
       });
 
       const project = await getDoc(doc(db, `projects/${projectID}`));
-      const { date, description, name, owner, requirements, pid } =
-        project.data();
+      const { date, pid } = project.data();
 
       await setDoc(doc(db, `users/${currentUser.uid}/projects/${projectID}`), {
         date,
-        // description,
-        // name,
-        // owner,
-        // requirements,
         pid,
       });
       setCurrentUser({

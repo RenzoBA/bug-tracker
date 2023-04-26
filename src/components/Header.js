@@ -17,7 +17,6 @@ const Header = () => {
     currentPid,
     setCurrentPid,
     getProjectInfo,
-    setCategorySelected,
     openPidContainer,
     setOpenPidContainer,
   } = useAuth();
@@ -59,7 +58,6 @@ const Header = () => {
     setCurrentProject(project.name);
     setOpenPidContainer(false);
     setCurrentPid(project.pid);
-    // setCategorySelected("dashboard");
   };
 
   return (
@@ -98,7 +96,6 @@ const Header = () => {
               >
                 {projectsInfo.map((project) => (
                   <button
-                    // href="/dashboard"
                     key={project.pid}
                     onClick={() => handleCurrentProject(project)}
                     className={`${
@@ -140,7 +137,6 @@ const Header = () => {
           {currentUser && (
             <Link
               href="/dashboard/user"
-              onClick={() => setCategorySelected("user")}
               className="flex flex-row items-center gap-2 text-2xl mr-3"
             >
               {!currentUser.photoURL ? (

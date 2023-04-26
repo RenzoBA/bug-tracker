@@ -27,8 +27,6 @@ const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
       [e.target.id]: e.target.value,
     });
   };
-  //fix submit changes, check delete
-  console.log(project);
 
   const handleSubmit = (e) => {
     e.preventDefault();
