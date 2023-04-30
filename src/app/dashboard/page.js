@@ -4,15 +4,17 @@ import CardBug from "@/components/CardBug";
 import SearchBar from "@/components/SearchBar";
 import { useAuth } from "@/context/AuthProvider";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiBug2Fill } from "react-icons/ri";
 
 const Dashboard = () => {
-  const { currentPid, getBugReports, getBugsResume } = useAuth();
+  const { currentUser, currentPid, getBugReports, getBugsResume } = useAuth();
   const [bugReports, setBugReports] = useState([]);
   const [tagsToFilter, setTagsToFilter] = useState([]);
   const [titleToFilter, setTitleToFilter] = useState("");
   const [bugResume, setBugResume] = useState([]);
+  const router = useRouter();
 
   useEffect(() => {
     getBugReports(setBugReports, tagsToFilter, titleToFilter);
@@ -24,6 +26,12 @@ const Dashboard = () => {
     };
     getData();
   }, []);
+
+  if (currentUser && !currentPid) {
+    router.push("/create_project");
+  } else if (!currentUser) {
+    router.push("/");
+  }
 
   return (
     <div className="min-h-screen w-full py-20 pl-[4.5rem]">

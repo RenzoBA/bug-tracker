@@ -51,7 +51,7 @@ const Header = () => {
   }, [currentUser, currentPid]);
 
   const handleBackdropClick = (e) => {
-    e.target === e.currentTarget && setOpenPidContainer(false);
+    e.target == e.currentTarget && setOpenPidContainer(false);
   };
 
   const handleCurrentProject = async (project) => {
