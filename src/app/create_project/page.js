@@ -1,147 +1,41 @@
-"use client";
+// "use client";
 
-import { useAuth } from "@/context/AuthProvider";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import { useState } from "react";
-import { RiLogoutBoxRLine, RiUser3Fill } from "react-icons/ri";
+// import { useAuth } from "@/context/AuthProvider";
+// import { useRouter } from "next/navigation";
 import Link from "next/link";
+import CreateProjectForm from "@/components/CreateProjectForm";
+import LogoutButton from "@/components/LogoutButton";
 
 const CreateProject = () => {
-  const { currentUser, createProject, setOpenPidContainer, logOut } = useAuth();
-  const router = useRouter();
-  const [projectData, setProjectData] = useState({
-    name: "",
-    description: "",
-    requirements: "",
-  });
+  // const { currentUser, setOpenPidContainer } = useAuth();
+  // const router = useRouter();
 
-  const handleBackdropClick = () => {
-    setOpenPidContainer(false);
-  };
+  // const handleBackdropClick = () => {
+  //   setOpenPidContainer(false);
+  // };
 
-  const handleChange = (e) => {
-    setProjectData({
-      ...projectData,
-      [e.target.id]: e.target.value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    createProject(projectData);
-    setProjectData({
-      name: "",
-      description: "",
-      requirements: "",
-    });
-  };
-
-  console.log("currentUser: ", currentUser);
-
-  if (currentUser) {
-    return (
-      <div
-        className="flex items-center justify-center min-h-screen py-16"
-        onClick={handleBackdropClick}
-      >
-        <div className="flex flex-col gap-3 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
-          <h2 className="text-3xl sm:text-5xl py-2 lowercase text-decoration flex gap-1">
-            Create Project
-          </h2>
-          <form onSubmit={handleSubmit} className="w-full flex flex-col gap-6">
-            <div className="flex flex-row gap-1 w-full">
-              {!currentUser.photoURL ? (
-                <RiUser3Fill className="text-decoration" />
-              ) : (
-                <Image
-                  src={currentUser.photoURL}
-                  width={50}
-                  height={50}
-                  alt="user-photo"
-                  className="user-photo w-12 h-12"
-                />
-              )}
-              <div className="relative">
-                <label className="label-2" htmlFor="owner">
-                  Owner
-                </label>
-                <p
-                  id="owner"
-                  name="owner"
-                  className="text-base sm:text-lg uppercase px-2 select-none"
-                >
-                  {currentUser.displayName}
-                </p>
-              </div>
-            </div>
-            <div className="relative">
-              <input
-                required
-                id="name"
-                name="name"
-                type="text"
-                placeholder="Project"
-                className="input peer"
-                value={projectData.name}
-                onChange={handleChange}
-              />
-              <label className="label" htmlFor="name">
-                Project
-              </label>
-            </div>
-            <div className="relative">
-              <textarea
-                required
-                id="description"
-                name="description"
-                rows="5"
-                placeholder="Description"
-                className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
-                value={projectData.description}
-                onChange={handleChange}
-              />
-              <label className="label" htmlFor="description">
-                Description
-              </label>
-            </div>
-            <div className="relative">
-              <input
-                required
-                id="requirements"
-                name="requirements"
-                type="text"
-                placeholder="Requirements"
-                className="input peer"
-                value={projectData.requirements}
-                onChange={handleChange}
-              />
-              <label className="label" htmlFor="requirements">
-                Requirements{" "}
-                <span className="text-xs text-white/50">
-                  (separate with commas)
-                </span>
-              </label>
-            </div>
-
-            <button className="signin-button mt-4">Create Project</button>
-          </form>
-          <div className="w-full flex flex-row justify-between">
-            <Link href="/join_project" className="link">
-              Join project
-            </Link>
-            <button
-              className="link flex flex-row gap-1 items-center"
-              onClick={logOut}
-            >
-              <RiLogoutBoxRLine className="text-xl" /> log out
-            </button>
-          </div>
+  // if (currentUser) {
+  return (
+    <div
+      className="flex items-center justify-center min-h-screen py-16"
+      // onClick={handleBackdropClick}
+    >
+      <div className="flex flex-col gap-3 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
+        <h2 className="text-3xl sm:text-5xl py-2 lowercase text-decoration flex gap-1">
+          Create Project
+        </h2>
+        <CreateProjectForm />
+        <div className="w-full flex flex-row justify-between">
+          <Link href="/join_project" className="link">
+            Join project
+          </Link>
+          <LogoutButton />
         </div>
       </div>
-    );
-  }
-  router.push("/");
+    </div>
+  );
+  // }
+  // router.push("/");
 };
 
 export default CreateProject;

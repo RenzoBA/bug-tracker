@@ -2,6 +2,7 @@ import "./globals.css";
 import AuthProvider from "@/context/AuthProvider";
 import { Comfortaa } from "@next/font/google";
 import Header from "@/components/Header";
+import Modal from "@/components/Modal";
 
 const comfortaa = Comfortaa({ subsets: ["latin"] });
 
@@ -15,6 +16,7 @@ export default function RootLayout({ children }) {
         <AuthProvider>
           <Header />
           {children}
+          <Modal />
         </AuthProvider>
         <div id="modal"></div>
       </body>

@@ -112,7 +112,7 @@ const AuthProvider = ({ children }) => {
   const sendSignInLink = async (email) => {
     try {
       const actionCodeSettings = {
-        url: "http://localhost:3000/update_user",
+        url: "http://localhost:3000/create_user",
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);
@@ -324,24 +324,24 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getBugsResume = async (setBugResume) => {
-    try {
-      const unsubscribe = onSnapshot(
-        collection(db, `projects/${currentPid}/bugs/`),
-        (querySnapshot) => {
-          const bugs = [];
-          querySnapshot.forEach((doc) => {
-            const { complete } = doc.data();
-            bugs.push({ complete, bid: doc.id });
-          });
-          setBugResume(bugs);
-        }
-      );
-      return () => unsubscribe();
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
+  // const getBugsResume = async (setBugResume) => {
+  //   try {
+  //     const unsubscribe = onSnapshot(
+  //       collection(db, `projects/${currentPid}/bugs/`),
+  //       (querySnapshot) => {
+  //         const bugs = [];
+  //         querySnapshot.forEach((doc) => {
+  //           const { complete } = doc.data();
+  //           bugs.push({ complete, bid: doc.id });
+  //         });
+  //         setBugResume(bugs);
+  //       }
+  //     );
+  //     return () => unsubscribe();
+  //   } catch (error) {
+  //     console.log(error.message);
+  //   }
+  // };
 
   const getTeamMembers = async () => {
     const teamInfo = await getDoc(doc(db, `projects/${currentPid}`));
@@ -440,8 +440,18 @@ const AuthProvider = ({ children }) => {
         pids: [...currentUser.pids, pid],
       });
       setCurrentPid(projectID);
+      setModal({
+        open: true,
+        title: "Project joined",
+        description: "You joined successfully.",
+      });
       router.push("/dashboard");
     } catch (error) {
+      setModal({
+        open: true,
+        title: "Project does not exist",
+        description: "Try again or create a new project.",
+      });
       console.log(error.message);
     }
   };
@@ -617,7 +627,7 @@ const AuthProvider = ({ children }) => {
     getProjectInfo,
     getTags,
     addTags,
-    getBugsResume,
+    // getBugsResume,
     getTeamMembers,
     removeUser,
     removeProject,
