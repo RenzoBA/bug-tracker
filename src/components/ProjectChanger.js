@@ -5,10 +5,13 @@ import Link from "next/link";
 import { RiArrowDownSLine, RiArrowUpSLine } from "react-icons/ri";
 import { useAuth } from "@/context/AuthProvider";
 
-const ProjectChanger = () => {
+const ProjectChanger = ({
+  projectsInfo,
+  setProjectsInfo,
+  elementSelected,
+  setElementSelected,
+}) => {
   const { currentUser, currentPid, setCurrentPid, getProjectInfo } = useAuth();
-  const [projectsInfo, setProjectsInfo] = useState([]);
-  const [elementSelected, setElementSelected] = useState("");
   const [openPidContainer, setOpenPidContainer] = useState(false);
 
   useEffect(() => {

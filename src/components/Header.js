@@ -5,9 +5,12 @@ import Image from "next/image";
 import { useAuth } from "@/context/AuthProvider";
 import Link from "next/link";
 import ProjectChanger from "./ProjectChanger";
+import { useState } from "react";
 
 const Header = () => {
   const { currentUser } = useAuth();
+  const [projectsInfo, setProjectsInfo] = useState([]);
+  const [elementSelected, setElementSelected] = useState("");
 
   // const handleBackdropClick = (e) => {
   //   e.target == e.currentTarget && setOpenPidContainer(false);
@@ -25,7 +28,12 @@ const Header = () => {
       </div>
       {currentUser && (
         <div className="flex flex-row items-center gap-6">
-          <ProjectChanger />
+          <ProjectChanger
+            projectsInfo={projectsInfo}
+            setProjectsInfo={setProjectsInfo}
+            elementSelected={elementSelected}
+            setElementSelected={setElementSelected}
+          />
           <Link
             href="/dashboard/user"
             className="flex flex-row items-center gap-2 text-2xl mr-3"
