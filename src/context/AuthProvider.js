@@ -44,7 +44,7 @@ const AuthProvider = ({ children }) => {
     title: "",
     description: "",
   });
-  const [openPidContainer, setOpenPidContainer] = useState(false);
+  // const [openPidContainer, setOpenPidContainer] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -324,25 +324,6 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // const getBugsResume = async (setBugResume) => {
-  //   try {
-  //     const unsubscribe = onSnapshot(
-  //       collection(db, `projects/${currentPid}/bugs/`),
-  //       (querySnapshot) => {
-  //         const bugs = [];
-  //         querySnapshot.forEach((doc) => {
-  //           const { complete } = doc.data();
-  //           bugs.push({ complete, bid: doc.id });
-  //         });
-  //         setBugResume(bugs);
-  //       }
-  //     );
-  //     return () => unsubscribe();
-  //   } catch (error) {
-  //     console.log(error.message);
-  //   }
-  // };
-
   const getTeamMembers = async () => {
     const teamInfo = await getDoc(doc(db, `projects/${currentPid}`));
     return teamInfo.data().team;
@@ -552,8 +533,11 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  const getBugReports = (setBugReports, tagsToFilter, titleToFilter) => {
-    console.log("titleToFilter", titleToFilter);
+  const getBugReports = (
+    setBugReports,
+    tagsToFilter = [],
+    titleToFilter = ""
+  ) => {
     try {
       let q = query(
         collection(db, `projects/${currentPid}/bugs/`),
@@ -611,8 +595,8 @@ const AuthProvider = ({ children }) => {
     setCurrentPid,
     modal,
     setModal,
-    openPidContainer,
-    setOpenPidContainer,
+    // openPidContainer,
+    // setOpenPidContainer,
     loading,
     signIn,
     sendSignInLink,
@@ -627,7 +611,6 @@ const AuthProvider = ({ children }) => {
     getProjectInfo,
     getTags,
     addTags,
-    // getBugsResume,
     getTeamMembers,
     removeUser,
     removeProject,

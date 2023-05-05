@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/context/AuthProvider";
 import { useEffect, useState } from "react";
 import Select from "react-select";

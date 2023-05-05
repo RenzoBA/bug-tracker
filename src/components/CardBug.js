@@ -1,3 +1,5 @@
+"use client";
+
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
 import { useEffect, useState } from "react";

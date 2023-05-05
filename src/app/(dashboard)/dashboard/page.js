@@ -24,8 +24,6 @@ const Dashboard = () => {
     redirect("/");
   }
 
-  console.log("bugReports", bugReports);
-
   return (
     <div className="min-h-screen w-full py-20 pl-[4.5rem]">
       <div className="flex flex-col justify-start items-center gap-10 w-full h-full px-10 py-5">

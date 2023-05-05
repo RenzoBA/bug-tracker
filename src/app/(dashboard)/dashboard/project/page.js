@@ -14,7 +14,7 @@ const DashboardTeam = () => {
     currentPid,
     getUserInfo,
     getProjectInfo,
-    getBugsResume,
+    getBugReports,
     setModal,
     removeProject,
     getDuration,
@@ -23,7 +23,7 @@ const DashboardTeam = () => {
   const [projectInfo, setProjectInfo] = useState("");
   const [projectOwner, setProjectOwner] = useState("");
   const [projectTeam, setProjectTeam] = useState("");
-  const [bugResume, setBugResume] = useState([]);
+  const [totalBugs, setTotalBugs] = useState([]);
   const [openModalProjectInfo, setOpenModalProjectInfo] = useState(false);
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const DashboardTeam = () => {
       }
       setProjectTeam(team);
 
-      await getBugsResume(setBugResume);
+      await getBugReports(setTotalBugs);
     };
     getData();
   }, [openModalProjectInfo, currentPid]);
@@ -209,18 +209,18 @@ const DashboardTeam = () => {
         <div className="flex flex-row justify-between rounded-lg bg-secondary w-full p-5 text-center">
           <div>
             <h2 className="title mb-2">total bugs:</h2>
-            <span className="text-6xl">{bugResume.length}</span>
+            <span className="text-6xl">{totalBugs.length}</span>
           </div>
           <div>
             <h2 className="title mb-2">bugs complete:</h2>
             <span className="text-6xl">
-              {bugResume.filter((bug) => bug.complete === true).length}
+              {totalBugs.filter((bug) => bug.complete === true).length}
             </span>
           </div>
           <div>
             <h2 className="title mb-2">pending bugs:</h2>
             <span className="text-6xl">
-              {bugResume.filter((bug) => bug.complete !== true).length}
+              {totalBugs.filter((bug) => bug.complete !== true).length}
             </span>
           </div>
         </div>
