@@ -112,7 +112,7 @@ const AuthProvider = ({ children }) => {
   const sendSignInLink = async (email) => {
     try {
       const actionCodeSettings = {
-        url: "http://localhost:3000/create_user",
+        url: "https://bug-tracker-sigma.vercel.app/create_user",
         handleCodeInApp: true,
       };
       await sendSignInLinkToEmail(auth, email, actionCodeSettings);

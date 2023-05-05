@@ -1,13 +1,13 @@
-import Modal from "@/components/Modal";
+"use client";
+
 import Sidebar from "@/components/Sidebar";
 
 const DashboardLayout = ({ children }) => {
   return (
-    <div className="flex flex-row">
+    <section className="flex flex-row">
       <Sidebar />
       {children}
-      <Modal />
-    </div>
+    </section>
   );
 };
 
