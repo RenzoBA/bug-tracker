@@ -47,13 +47,13 @@ const ProjectChanger = () => {
   return (
     <div className="relative">
       <button
-        className="relative flex flex-row items-center justify-between px-2 py-1 text-left h-10 w-52 bg-secondary rounded"
+        className="relative flex flex-row items-center justify-between px-2 py-1 text-left h-10 w-60 bg-secondary rounded"
         onClick={() => setOpenPidContainer(!openPidContainer)}
       >
         <div>
           <h2>
-            {elementSelected.length > 18
-              ? `${elementSelected.slice(0, 18)}...`
+            {elementSelected.length > 20
+              ? `${elementSelected.slice(0, 20)}...`
               : elementSelected}
           </h2>
         </div>
@@ -73,8 +73,8 @@ const ProjectChanger = () => {
             onClick={() => SelectProject(project)}
           >
             <h2>
-              {project.name.length > 18
-                ? `${project.name.slice(0, 18)}...`
+              {project.name.length > 20
+                ? `${project.name.slice(0, 20)}...`
                 : project.name}
             </h2>
             <p className="text-sm font-light text-white/50">
