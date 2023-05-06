@@ -27,12 +27,12 @@ const Dashboard = () => {
   return (
     <div className="min-h-screen w-full py-20 pl-[4.5rem]">
       <div className="flex flex-col justify-start items-center gap-10 w-full h-full px-10 py-5">
-        <SearchBar
+        {/* <SearchBar
           tagsToFilter={tagsToFilter}
           setTagsToFilter={setTagsToFilter}
           titleToFilter={titleToFilter}
           setTitleToFilter={setTitleToFilter}
-        />
+        /> */}
         <hr className="border-white/5 w-full" />
         <div className="flex flex-wrap gap-3 items-start justify-center w-full h-full">
           {bugReports.length ? (
