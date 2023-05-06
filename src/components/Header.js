@@ -25,7 +25,7 @@ const Header = () => {
       </div>
       {currentUser && (
         <div className="flex flex-row items-center gap-6">
-          {/* <ProjectChanger /> */}
+          <ProjectChanger />
           <Link
             href="/dashboard/user"
             className="flex flex-row items-center gap-2 text-2xl mr-3"
