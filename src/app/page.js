@@ -11,10 +11,10 @@ const Home = () => {
         </h2>
         <LoginForm />
         <div className="w-full flex flex-row justify-between">
-          <Link href="/signup" className="link">
+          <Link href={"/signup"} className="link">
             Sign Up
           </Link>
-          <Link href="/reset_password" className="link">
+          <Link href={"/reset_password"} className="link">
             Forgot password?
           </Link>
         </div>

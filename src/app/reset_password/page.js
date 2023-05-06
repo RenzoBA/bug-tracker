@@ -22,10 +22,10 @@ const ResetPassword = () => {
           Please check your email inbox and follow the link.
         </p>
         <div className="w-full flex flex-row justify-between">
-          <Link href="/signup" className="link">
+          <Link href={"/signup"} className="link">
             Sign Up
           </Link>
-          <Link href="/" className="link">
+          <Link href={"/"} className="link">
             Log In
           </Link>
         </div>

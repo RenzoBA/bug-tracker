@@ -22,7 +22,7 @@ const Signup = () => {
           Please check your email inbox and follow the link.
         </p>
         <div className="w-full flex flex-row justify-between">
-          <Link href="/" className="link">
+          <Link href={"/"} className="link">
             Log In
           </Link>
         </div>
