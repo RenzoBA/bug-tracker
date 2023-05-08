@@ -18,7 +18,7 @@ const CreateUserForm = () => {
       await signInLink();
     };
     getData();
-  }, []);
+  }, [signInLink]);
 
   const handlePhoto = (e) => {
     setPhotoFile(e.target.files[0]);

@@ -20,7 +20,7 @@ const CardBug = ({ bug }) => {
       setResponsable(team);
     };
     getData();
-  }, []);
+  }, [bug.team, getUserInfo]);
 
   const handleClick = () => {
     setOpenModalBug(true);

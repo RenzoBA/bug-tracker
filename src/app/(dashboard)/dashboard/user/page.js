@@ -29,7 +29,7 @@ const DashboardUser = () => {
       };
       getData();
     }
-  }, [currentUser]);
+  }, [currentUser, getProjectInfo]);
 
   if (currentUser) {
     return (

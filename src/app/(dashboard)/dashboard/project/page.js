@@ -43,7 +43,13 @@ const DashboardTeam = () => {
       await getBugReports(setTotalBugs);
     };
     getData();
-  }, [openModalProjectInfo, currentPid]);
+  }, [
+    openModalProjectInfo,
+    currentPid,
+    getBugReports,
+    getProjectInfo,
+    getUserInfo,
+  ]);
 
   const handleCopy = (event) => {
     const clipboard = new ClipboardJS(event.currentTarget, {

@@ -19,7 +19,7 @@ const ProjectChanger = () => {
       };
       getData();
     }
-  }, [currentUser, currentPid]);
+  }, [currentUser, currentPid, getProjectInfo]);
 
   useEffect(() => {
     if (currentUser) {
@@ -36,7 +36,7 @@ const ProjectChanger = () => {
       };
       getData();
     }
-  }, [currentUser, currentPid]);
+  }, [currentUser, currentPid, getProjectInfo]);
 
   const SelectProject = (project) => {
     setElementSelected(project.name);

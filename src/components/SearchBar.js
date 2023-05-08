@@ -15,7 +15,7 @@ const SearchBar = ({
 
   useEffect(() => {
     getTags(setTagsProject);
-  }, []);
+  }, [getTags]);
 
   return (
     <div className="flex flex-row gap-10 justify-between w-full px-1">

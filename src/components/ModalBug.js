@@ -38,7 +38,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
       getBugComments(bug.bid, setComments);
     };
     getData();
-  }, []);
+  }, [bug.bid, bug.owner, bug.team, getBugComments, getUserInfo]);
 
   const handleKeyDown = (e) => {
     e.key === "Escape" && setOpenModalBug(false);

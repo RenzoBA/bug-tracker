@@ -13,7 +13,7 @@ const BugComment = ({ comment }) => {
       setUserInfo(data);
     };
     getData();
-  }, []);
+  }, [comment.user, getUserInfo]);
 
   return (
     <div className="bg-primary/50 p-4 rounded-lg">

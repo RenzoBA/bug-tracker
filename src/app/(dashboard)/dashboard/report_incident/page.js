@@ -44,7 +44,7 @@ const DashboardReportIncident = () => {
     };
 
     getData();
-  }, []);
+  }, [getTags, getTeamMembers, getUserInfo]);
 
   const handleChange = (e) => {
     if (e.target.id === "member") {
