@@ -1,14 +1,18 @@
-// "use client";
+"use client";
 
 import Link from "next/link";
 import { RiBug2Fill } from "react-icons/ri";
-// import { useAuth } from "@/context/AuthProvider";
+import { useAuth } from "@/context/AuthProvider";
 import CreateUserForm from "@/components/CreateUserForm";
+import { redirect } from "next/navigation";
 
 const UpdateUser = () => {
-  // const { currentUser } = useAuth();
+  const { currentUser } = useAuth();
 
-  // if (currentUser) {
+  if (!currentUser) {
+    redirect("/");
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
@@ -27,7 +31,6 @@ const UpdateUser = () => {
       </div>
     </div>
   );
-  // }
 };
 
 export default UpdateUser;

@@ -1,8 +1,18 @@
+"use client";
+
 import Link from "next/link";
 import { RiBug2Fill } from "react-icons/ri";
 import LoginForm from "@/components/LoginForm";
+import { useAuth } from "@/context/AuthProvider";
+import { redirect } from "next/navigation";
 
 const Home = () => {
+  const { currentUser } = useAuth();
+
+  if (currentUser) {
+    redirect("/dashboard");
+  }
+
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">

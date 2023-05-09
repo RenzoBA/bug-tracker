@@ -30,7 +30,7 @@ import {
   where,
 } from "firebase/firestore";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { useRouter } from "next/navigation";
+import { useRouter, redirect } from "next/navigation";
 
 const AuthContext = createContext();
 
@@ -97,7 +97,7 @@ const AuthProvider = ({ children }) => {
         setCurrentPid(pids[0]);
         router.push("/dashboard");
       } else {
-        router.push("/create_project");
+        redirect("/create_project");
       }
     } catch (error) {
       setModal({
@@ -176,10 +176,10 @@ const AuthProvider = ({ children }) => {
         title: "User updated",
         description: "Your information was updated.",
       });
+      router.push("/create_project");
     } catch (error) {
       console.log(error.message);
     }
-    router.push("/create_project");
   };
 
   const updateProjectInfo = async (projectInfo) => {
@@ -357,7 +357,7 @@ const AuthProvider = ({ children }) => {
         router.push("/dashboard");
       } else {
         setCurrentPid("");
-        router.push("/create_project");
+        redirect("/create_project");
       }
       setModal({
         open: true,
@@ -597,7 +597,7 @@ const AuthProvider = ({ children }) => {
     setModal,
     // openPidContainer,
     // setOpenPidContainer,
-    loading,
+    // loading,
     signIn,
     sendSignInLink,
     signInLink,
