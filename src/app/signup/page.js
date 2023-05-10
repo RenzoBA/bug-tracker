@@ -1,16 +1,8 @@
-// "use client";
-
 import Link from "next/link";
 import { RiBug2Fill } from "react-icons/ri";
-// import { useAuth } from "@/context/AuthProvider";
-import { useRouter } from "next/navigation";
 import SignUpForm from "@/components/SignUpForm";
 
 const Signup = () => {
-  // const { currentUser } = useAuth();
-  // const router = useRouter();
-
-  // if (!currentUser) {
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="flex flex-col gap-5 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
@@ -29,10 +21,6 @@ const Signup = () => {
       </div>
     </div>
   );
-  // }
-  // if (currentUser) {
-  //   router.push("/dashboard");
-  // }
 };
 
 export default Signup;

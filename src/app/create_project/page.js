@@ -8,21 +8,13 @@ import LogoutButton from "@/components/LogoutButton";
 
 const CreateProject = () => {
   const { currentUser } = useAuth();
-  // const router = useRouter();
-
-  // const handleBackdropClick = () => {
-  //   setOpenPidContainer(false);
-  // };
 
   if (!currentUser) {
     redirect("/");
   }
 
   return (
-    <div
-      className="flex items-center justify-center min-h-screen py-16"
-      // onClick={handleBackdropClick}
-    >
+    <div className="flex items-center justify-center min-h-screen py-16">
       <div className="flex flex-col gap-3 items-center p-10 bg-[#203a43] rounded-none sm:rounded-md w-full sm:w-[28rem]">
         <h2 className="text-3xl sm:text-5xl py-2 lowercase text-decoration flex gap-1">
           Create Project

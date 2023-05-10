@@ -44,7 +44,6 @@ const AuthProvider = ({ children }) => {
     title: "",
     description: "",
   });
-  // const [openPidContainer, setOpenPidContainer] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const router = useRouter();
@@ -267,7 +266,7 @@ const AuthProvider = ({ children }) => {
   const logOut = async () => {
     try {
       await signOut(auth);
-      router.push("/");
+      setCurrentUser(null);
     } catch (error) {
       console.log(error.message);
     }
@@ -595,9 +594,6 @@ const AuthProvider = ({ children }) => {
     setCurrentPid,
     modal,
     setModal,
-    // openPidContainer,
-    // setOpenPidContainer,
-    // loading,
     signIn,
     sendSignInLink,
     signInLink,

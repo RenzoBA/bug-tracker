@@ -101,6 +101,7 @@ const DashboardUser = () => {
             <>
               <ProjectSkeleton />
               <ProjectSkeleton />
+              <ProjectSkeleton />
             </>
           )}
         </div>
