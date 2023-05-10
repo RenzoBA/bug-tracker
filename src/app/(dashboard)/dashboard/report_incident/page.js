@@ -3,6 +3,7 @@
 import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiUser3Fill } from "react-icons/ri";
 import CreatableSelect from "react-select/creatable";
@@ -82,6 +83,10 @@ const DashboardReportIncident = () => {
       team: [],
     });
   };
+
+  if (!currentUser) {
+    redirect("/");
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
@@ -183,7 +188,7 @@ const DashboardReportIncident = () => {
                               width={50}
                               height={50}
                               alt="user-photo"
-                              className="user-photo w-10 h-10"
+                              className="user-photo w-12 h-12"
                             />
                           )}
                           <span>{`${member.displayName} ${

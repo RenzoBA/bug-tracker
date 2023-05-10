@@ -65,7 +65,7 @@ const ModalUserInfo = ({ currentUser, setOpenModalUserInfo }) => {
                   width={50}
                   height={50}
                   alt="user-photo"
-                  className="user-photo"
+                  className="user-photo w-12 h-12"
                 />
                 <label
                   htmlFor="image_upload"

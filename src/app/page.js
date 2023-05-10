@@ -1,4 +1,4 @@
-"use client";
+// "use client";
 
 import Link from "next/link";
 import { RiBug2Fill } from "react-icons/ri";
@@ -7,11 +7,11 @@ import { useAuth } from "@/context/AuthProvider";
 import { redirect } from "next/navigation";
 
 const Home = () => {
-  const { currentUser } = useAuth();
+  // const { currentUser } = useAuth();
 
-  if (currentUser) {
-    redirect("/dashboard");
-  }
+  // if (currentUser) {
+  //   redirect("/dashboard");
+  // }
 
   return (
     <div className="flex items-center justify-center min-h-screen">

@@ -5,6 +5,7 @@ import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
 import ClipboardJS from "clipboard";
 import Image from "next/image";
+import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
 import { RiFileCopyLine, RiPencilFill, RiUser3Fill } from "react-icons/ri";
 
@@ -71,6 +72,10 @@ const DashboardTeam = () => {
     });
     clipboard.onClick(event);
   };
+
+  if (!currentUser) {
+    redirect("/");
+  }
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
@@ -140,7 +145,7 @@ const DashboardTeam = () => {
                     width={50}
                     height={50}
                     alt="user-photo"
-                    className="user-photo"
+                    className="user-photo w-12 h-12"
                   />
                 )}
                 <div className="flex flex-col justify-between">
@@ -170,7 +175,7 @@ const DashboardTeam = () => {
                         width={50}
                         height={50}
                         alt="user-photo"
-                        className="user-photo"
+                        className="user-photo w-12 h-12"
                       />
                     )}
                     <div className="flex flex-col justify-between">

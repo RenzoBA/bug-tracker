@@ -204,7 +204,7 @@ const ModalBug = ({ setOpenModalBug, bug }) => {
                 width={50}
                 height={50}
                 alt="user-photo"
-                className="user-photo"
+                className="user-photo w-12 h-12"
               />
               <div className="relative w-full">
                 <textarea
