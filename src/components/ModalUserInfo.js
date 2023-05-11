@@ -6,9 +6,9 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { RiCloseFill } from "react-icons/ri";
 
-const ModalUserInfo = ({ currentUser, setOpenModalUserInfo }) => {
+const ModalUserInfo = ({ user, setOpenModalUserInfo }) => {
   const { updateUserInfo } = useAuth();
-  const [displayName, setDisplayName] = useState(currentUser.displayName);
+  const [displayName, setDisplayName] = useState(user.displayName);
   const [photoFile, setPhotoFile] = useState("");
   const [photoPreview, setPhotoPreview] = useState("");
 
@@ -58,10 +58,10 @@ const ModalUserInfo = ({ currentUser, setOpenModalUserInfo }) => {
               onChange={handlePhoto}
               className="hidden"
             />
-            {currentUser.photoURL ? (
+            {user.photoURL ? (
               <div className="flex flex-col gap-2 items-center justify-center">
                 <Image
-                  src={photoPreview || currentUser.photoURL}
+                  src={photoPreview || user.photoURL}
                   width={50}
                   height={50}
                   alt="user-photo"

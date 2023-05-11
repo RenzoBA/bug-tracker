@@ -5,13 +5,9 @@ import { useState } from "react";
 import { createPortal } from "react-dom";
 import { RiCloseFill } from "react-icons/ri";
 
-const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
+const ModalProjectInfo = ({ project, setOpenModalProjectInfo }) => {
   const { updateProjectInfo } = useAuth();
-  const [project, setProject] = useState({
-    name: projectInfo.name,
-    description: projectInfo.description,
-    requirements: projectInfo.requirements,
-  });
+  const [projectData, setProjectData] = useState(project);
 
   const handleKeyDown = (e) => {
     e.key === "Escape" && setOpenModalProjectInfo(false);
@@ -22,15 +18,15 @@ const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
   };
 
   const handleChange = (e) => {
-    setProject({
-      ...project,
+    setProjectData({
+      ...projectData,
       [e.target.id]: e.target.value,
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    updateProjectInfo(project);
+    updateProjectInfo(projectData);
     setOpenModalProjectInfo(false);
   };
 
@@ -59,7 +55,7 @@ const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
               type="text"
               placeholder="Project"
               className="input peer"
-              value={project.name}
+              value={projectData.name}
               onChange={handleChange}
             />
             <label className="label" htmlFor="name">
@@ -72,7 +68,7 @@ const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
               rows="5"
               placeholder="Description"
               className="input peer scrollbar-thin scrollbar-thumb-decoration scrollbar-track-white/10"
-              value={project.description}
+              value={projectData.description}
               onChange={handleChange}
             />
             <label className="label" htmlFor="description">
@@ -86,7 +82,7 @@ const ModalProjectInfo = ({ projectInfo, setOpenModalProjectInfo }) => {
               type="text"
               placeholder="Requirements"
               className="input peer"
-              value={project.requirements}
+              value={projectData.requirements}
               onChange={handleChange}
             />
             <label className="label" htmlFor="requirements">

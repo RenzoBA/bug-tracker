@@ -1,19 +1,15 @@
 "use client";
 
+import CardInfo from "@/components/CardInfo";
 import CardProject from "@/components/CardProject";
-import ModalUserInfo from "@/components/ModalUserInfo";
-import ModalUserPassword from "@/components/ModalUserPassword";
 import ProjectSkeleton from "@/components/ProjectSkeleton";
 import { useAuth } from "@/context/AuthProvider";
-import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RiPencilFill, RiUser3Fill } from "react-icons/ri";
 
 const DashboardUser = () => {
-  const { currentUser, removeUser, getProjectInfo, logOut } = useAuth();
-  const [openModalUserInfo, setOpenModalUserInfo] = useState(false);
-  const [openModalUserPassword, setOpenModalUserPassword] = useState(false);
+  const { currentUser, getProjectInfo, logOut } = useAuth();
+
   const [projectsInfo, setProjectsInfo] = useState("");
 
   useEffect(() => {
@@ -36,82 +32,39 @@ const DashboardUser = () => {
 
   return (
     <div className="flex flex-col gap-10 items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
-      <div className="flex gap-5">
-        {!currentUser.photoURL ? (
-          <RiUser3Fill className="text-decoration text-6xl" />
-        ) : (
-          <Image
-            src={currentUser.photoURL}
-            width={140}
-            height={140}
-            alt="user-photo"
-            className="user-photo w-32 h-32"
-          />
-        )}
-        <div className="flex flex-col items-start">
-          <div className="flex flex-row gap-3 items-center">
-            <h2 className="text-6xl font-semibold">
-              {currentUser.displayName}
-            </h2>
-            <button
-              onClick={() => setOpenModalUserInfo(true)}
-              className="text-5xl text-white/50 hover:text-white"
-            >
-              <RiPencilFill />
-            </button>
-            {openModalUserInfo && (
-              <ModalUserInfo
-                setOpenModalUserInfo={setOpenModalUserInfo}
-                currentUser={currentUser}
-              />
+      <div className="flex flex-col items-center gap-10 w-3/4">
+        <h2 className="text-3xl sm:text-5xl lowercase text-decoration">
+          User Info
+        </h2>
+        <p>
+          All your information is here. You can change your username, profile
+          photo, password or delete your account.
+        </p>
+        <CardInfo type="user" user={currentUser} />
+        <div className="flex flex-col gap-4 self-start">
+          <p className="text-white/50">Your projects: </p>
+          <div className="flex flex-wrap items-center gap-2">
+            {projectsInfo ? (
+              projectsInfo.map((project) => (
+                <CardProject project={project} key={project.pid} />
+              ))
+            ) : (
+              <>
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+                <ProjectSkeleton />
+              </>
             )}
           </div>
-          <h3 className="text-2xl">{currentUser.email}</h3>
-          <div className="flex flex-col items-start">
-            <>
-              <button
-                onClick={() => setOpenModalUserPassword(true)}
-                className="text-white/50 hover:text-white"
-              >
-                Change Password
-              </button>
-              {openModalUserPassword && (
-                <ModalUserPassword
-                  setOpenModalUserPassword={setOpenModalUserPassword}
-                />
-              )}
-            </>
-            <button
-              onClick={removeUser}
-              className="text-red-500/50 hover:text-red-500 "
-            >
-              Delete Account
-            </button>
-          </div>
         </div>
+        <button
+          className="signin-button w-full border-white/50 hover:border-white"
+          onClick={logOut}
+        >
+          Log Out
+        </button>
       </div>
-      <div className="flex flex-col gap-4">
-        <p className="text-xl">Your projects: </p>
-        <div className="flex flex-wrap items-center gap-2">
-          {projectsInfo ? (
-            projectsInfo.map((project) => (
-              <CardProject project={project} key={project.pid} />
-            ))
-          ) : (
-            <>
-              <ProjectSkeleton />
-              <ProjectSkeleton />
-              <ProjectSkeleton />
-            </>
-          )}
-        </div>
-      </div>
-      <button
-        className="signin-button w-40 border-white/50 hover:border-white"
-        onClick={logOut}
-      >
-        log Out
-      </button>
     </div>
   );
 };

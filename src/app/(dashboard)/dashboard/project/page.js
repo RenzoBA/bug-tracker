@@ -1,13 +1,12 @@
 "use client";
 
-import ModalProjectInfo from "@/components/ModalProjectInfo";
+import CardInfo from "@/components/CardInfo";
 import UserSkeleton from "@/components/UserSkeleton";
 import { useAuth } from "@/context/AuthProvider";
-import ClipboardJS from "clipboard";
 import Image from "next/image";
 import { redirect } from "next/navigation";
 import { useEffect, useState } from "react";
-import { RiFileCopyLine, RiPencilFill, RiUser3Fill } from "react-icons/ri";
+import { RiUser3Fill } from "react-icons/ri";
 
 const DashboardTeam = () => {
   const {
@@ -16,8 +15,6 @@ const DashboardTeam = () => {
     getUserInfo,
     getProjectInfo,
     getBugReports,
-    setModal,
-    removeProject,
     getDuration,
   } = useAuth();
 
@@ -25,7 +22,6 @@ const DashboardTeam = () => {
   const [projectOwner, setProjectOwner] = useState("");
   const [projectTeam, setProjectTeam] = useState("");
   const [totalBugs, setTotalBugs] = useState([]);
-  const [openModalProjectInfo, setOpenModalProjectInfo] = useState(false);
 
   useEffect(() => {
     const getData = async () => {
@@ -44,34 +40,7 @@ const DashboardTeam = () => {
       await getBugReports(setTotalBugs);
     };
     getData();
-  }, [
-    openModalProjectInfo,
-    currentPid,
-    getBugReports,
-    getProjectInfo,
-    getUserInfo,
-  ]);
-
-  const handleCopy = (event) => {
-    const clipboard = new ClipboardJS(event.currentTarget, {
-      text: () => currentPid,
-    });
-    clipboard.on("success", () => {
-      setModal({
-        open: true,
-        title: "PID copied",
-        description: "Share it with your teammates to join this project.",
-      });
-    });
-    clipboard.on("error", () => {
-      setModal({
-        open: true,
-        title: "PID copied error",
-        description: "Project ID was not copied. Try again",
-      });
-    });
-    clipboard.onClick(event);
-  };
+  }, [currentPid, getProjectInfo]);
 
   if (!currentUser) {
     redirect("/");
@@ -79,60 +48,18 @@ const DashboardTeam = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
-      <div className="flex flex-col gap-10 w-3/4">
-        <div>
-          {currentUser.uid === projectOwner.uid ? (
-            <>
-              {projectInfo ? (
-                <div className="flex flex-row gap-3 items-center">
-                  <h1 className="text-6xl font-semibold">{projectInfo.name}</h1>
-                  <button
-                    onClick={() => setOpenModalProjectInfo(true)}
-                    className="text-5xl text-white/50 hover:text-white"
-                  >
-                    <RiPencilFill />
-                  </button>
-                  {openModalProjectInfo && (
-                    <ModalProjectInfo
-                      setOpenModalProjectInfo={setOpenModalProjectInfo}
-                      projectInfo={projectInfo}
-                    />
-                  )}
-                </div>
-              ) : (
-                <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
-              )}
-              <button
-                className="text-2xl copy-button flex flex-row gap-1 items-center mt-2"
-                onClick={handleCopy}
-              >
-                {`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}
-                <RiFileCopyLine className="text-3xl" />
-              </button>
-              <button
-                onClick={removeProject}
-                className="text-red-500/50 hover:text-red-500 mt-4"
-              >
-                Delete Project
-              </button>
-            </>
-          ) : (
-            <>
-              {projectInfo ? (
-                <h1 className="text-6xl font-semibold">{projectInfo.name}</h1>
-              ) : (
-                <div className="h-16 w-80 rounded-full bg-primary/50 animate-pulse" />
-              )}
-              <span className="text-2xl copy-button flex flex-row gap-1 items-center">{`${currentPid.slice(
-                0,
-                5
-              )}.....${currentPid.slice(-5)}`}</span>
-            </>
-          )}
-        </div>
-        <div>
+      <div className="flex flex-col items-center gap-10 w-3/4">
+        <h2 className="text-3xl sm:text-5xl lowercase text-decoration">
+          Project Info
+        </h2>
+        <p>
+          All the information of current project is here. You can change its
+          name, description and requirements if you are the owner.
+        </p>
+        <CardInfo type="project" user={currentUser} project={projectInfo} />
+        <div className="self-start flex flex-col gap-4">
           <div>
-            <label htmlFor="owner" className="title">
+            <label htmlFor="owner" className="text-white/50">
               owner:
             </label>
             {projectOwner ? (
@@ -160,7 +87,7 @@ const DashboardTeam = () => {
             )}
           </div>
           <div>
-            <label htmlFor="team" className="title">
+            <label htmlFor="team" className="text-white/50">
               team:
             </label>
             <div className="flex gap-4 mt-1" id="team">
@@ -190,31 +117,10 @@ const DashboardTeam = () => {
                 <>
                   <UserSkeleton />
                   <UserSkeleton />
+                  <UserSkeleton />
                 </>
               )}
             </div>
-          </div>
-        </div>
-        <div className="flex flex-row items-center justify-center w-full gap-5">
-          <div className="flex flex-col rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
-            <div>
-              <label htmlFor="date" className="title">
-                date:
-              </label>
-              <p id="date">{getDuration(projectInfo.date?.seconds)}</p>
-            </div>
-            <div>
-              <label htmlFor="requirement" className="title">
-                requirements:
-              </label>
-              <p id="requirement">{projectInfo.requirements}</p>
-            </div>
-          </div>
-          <div className="flex flex-col rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
-            <label htmlFor="requirement" className="title">
-              description:
-            </label>
-            <p id="requirement">{projectInfo.description}</p>
           </div>
         </div>
         <div className="flex flex-row justify-between rounded-lg bg-secondary w-full p-5 text-center">
@@ -233,6 +139,28 @@ const DashboardTeam = () => {
             <span className="text-6xl">
               {totalBugs.filter((bug) => bug.complete !== true).length}
             </span>
+          </div>
+        </div>
+        <div className="flex flex-row items-center justify-center w-full gap-5">
+          <div className="rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
+            <div>
+              <label htmlFor="date" className="title">
+                date:
+              </label>
+              <p id="date">{getDuration(projectInfo.date?.seconds)}</p>
+            </div>
+            <div>
+              <label htmlFor="requirement" className="title">
+                requirements:
+              </label>
+              <p id="requirement">{projectInfo.requirements}</p>
+            </div>
+          </div>
+          <div className="flex flex-col rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
+            <label htmlFor="requirement" className="title">
+              description:
+            </label>
+            <p id="requirement">{projectInfo.description}</p>
           </div>
         </div>
       </div>

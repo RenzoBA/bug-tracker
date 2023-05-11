@@ -94,31 +94,10 @@ const DashboardReportIncident = () => {
         <h2 className="text-3xl sm:text-5xl lowercase text-decoration">
           Bug Report
         </h2>
-        <div className="flex flex-row gap-1 w-full">
-          {!currentUser.photoURL ? (
-            <RiUser3Fill className="text-decoration" />
-          ) : (
-            <Image
-              src={currentUser.photoURL}
-              width={50}
-              height={50}
-              alt="user-photo"
-              className="user-photo w-12 h-12"
-            />
-          )}
-          <div className="relative">
-            <label className="label-2" htmlFor="owner">
-              Bug owner <span className="text-xs text-white/50">(you)</span>
-            </label>
-            <p
-              id="owner"
-              name="owner"
-              className="text-base sm:text-lg px-2 select-none"
-            >
-              {currentUser.displayName}
-            </p>
-          </div>
-        </div>
+        <p>
+          Please complete the form below with the details of your bug to add it
+          to the current project.
+        </p>
         <form onSubmit={handleSubmit} className="w-full flex flex-col gap-5">
           <div className="flex flex-row gap-5">
             <div className="flex flex-col gap-5 items-center justify-between p-10 bg-[#203a43] rounded-none md:rounded-md w-full md:w-[50rem]">
@@ -178,7 +157,7 @@ const DashboardReportIncident = () => {
                 <div id="responsable" className="flex flex-col gap-2 mt-2">
                   {teamMembers ? (
                     teamMembers.map((member) => (
-                      <div key={member.uid} className="input-container">
+                      <div key={member.uid} className="input-container w-full">
                         <>
                           {!member.photoURL ? (
                             <RiUser3Fill className="text-decoration" />
@@ -206,11 +185,15 @@ const DashboardReportIncident = () => {
                     ))
                   ) : (
                     <>
-                      <div className="input-container">
+                      <div className="input-container w-full">
                         <UserSkeleton />
                         <div className="checkmark" />
                       </div>
-                      <div className="input-container">
+                      <div className="input-container w-full">
+                        <UserSkeleton />
+                        <div className="checkmark" />
+                      </div>
+                      <div className="input-container w-full">
                         <UserSkeleton />
                         <div className="checkmark" />
                       </div>
