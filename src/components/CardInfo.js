@@ -131,10 +131,13 @@ const CardInfo = ({ type, user, project }) => {
                 />
               )}
             </div>
-            <div className="flex flex-row gap-3 items-center text-xl">
+            <div className="flex flex-row gap-3 items-center text-xl mt-2">
               <h3>{`${currentPid.slice(0, 5)}.....${currentPid.slice(-5)}`}</h3>
               {user?.uid === project.owner && (
-                <button className="copy-button" onClick={handleCopy}>
+                <button
+                  onClick={handleCopy}
+                  className="text-white/50 hover:text-white"
+                >
                   <RiFileCopyLine />
                 </button>
               )}

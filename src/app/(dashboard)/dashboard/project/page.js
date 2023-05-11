@@ -16,12 +16,14 @@ const DashboardTeam = () => {
     getProjectInfo,
     getBugReports,
     getDuration,
+    getTags,
   } = useAuth();
 
   const [projectInfo, setProjectInfo] = useState("");
   const [projectOwner, setProjectOwner] = useState("");
   const [projectTeam, setProjectTeam] = useState("");
   const [totalBugs, setTotalBugs] = useState([]);
+  const [tagsProject, setTagsProject] = useState([]);
 
   useEffect(() => {
     const getData = async () => {
@@ -42,10 +44,13 @@ const DashboardTeam = () => {
     getData();
   }, [currentPid, getProjectInfo]);
 
+  useEffect(() => {
+    getTags(setTagsProject);
+  }, [getTags]);
+
   if (!currentUser) {
     redirect("/");
   }
-
   return (
     <div className="flex flex-col items-center justify-center min-h-screen w-full py-20 pl-[4.5rem]">
       <div className="flex flex-col items-center gap-10 w-3/4">
@@ -142,7 +147,22 @@ const DashboardTeam = () => {
           </div>
         </div>
         <div className="flex flex-row items-center justify-center w-full gap-5">
-          <div className="rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
+          <div className="flex flex-col gap-2 rounded-lg bg-secondary w-1/2 h-full px-5 py-3">
+            <div>
+              <label htmlFor="tags" className="title">
+                tags:
+              </label>
+              <div className="flex flex-wrap gap-1 mt-1">
+                {tagsProject.map((tag) => (
+                  <span
+                    key={tag.tid}
+                    className="text-sm font-light bg-[#41575f] px-2 rounded-sm text-white/50"
+                  >
+                    {tag.label}
+                  </span>
+                ))}
+              </div>
+            </div>
             <div>
               <label htmlFor="date" className="title">
                 date:
